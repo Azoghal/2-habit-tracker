@@ -1,4 +1,6 @@
+import AlternateCheckbox from "@/components/AlternateCheckbox";
 import Checkbox, { CheckboxState } from "@/components/Checkbox";
+import { DifferentCheckbox } from "@/components/DifferentCheckbox";
 import { useCallback, useState } from "react";
 
 export default function Index() {
@@ -18,5 +20,7 @@ export default function Index() {
 
   return <>
     <Checkbox state={checkState} onClick={updateCheck}/>
+    {/* <AlternateCheckbox state={checkState} onClick={updateCheck}/> */}
+    <DifferentCheckbox state={checkState} onClick={updateCheck} />
   </>;
 }
