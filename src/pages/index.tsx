@@ -1,26 +1,49 @@
-import AlternateCheckbox from "@/components/AlternateCheckbox";
-import Checkbox, { CheckboxState } from "@/components/Checkbox";
-import { DifferentCheckbox } from "@/components/DifferentCheckbox";
-import { useCallback, useState } from "react";
+import { Checkbox, CheckboxState } from "@/components/Checkbox";
+import Row from "@/components/Row";
+import { useCallback, useMemo, useState } from "react";
+
+
+export interface CheckboxInfo{
+  key: string
+  state: CheckboxState
+}
+
+function incrementState(checkState: CheckboxState){
+  switch(checkState){
+  case CheckboxState.Empty:
+    return CheckboxState.Half;
+  case CheckboxState.Half:
+    return CheckboxState.Full;
+  case CheckboxState.Full:
+    return CheckboxState.Empty;
+  }
+}
+
 
 export default function Index() {
-  const [checkState, setCheckState] = useState(CheckboxState.Half);
+  const [allValues, setAllValues] = useState<Map<string, CheckboxInfo>>(new Map(
+    [['monday', {key: 'monday',  state:CheckboxState.Empty}],
+     ['tuesday', {key: 'tuesday',  state:CheckboxState.Empty}]]
+  ))
 
-  const updateCheck = useCallback(()=>{
-    console.log("updating check, currentValue", checkState)
-    switch(checkState){
-    case CheckboxState.Empty:
-      return setCheckState(CheckboxState.Half);
-    case CheckboxState.Half:
-      return setCheckState(CheckboxState.Full);
-    case CheckboxState.Full:
-      return setCheckState(CheckboxState.Empty);
-    }
-  }, [checkState, setCheckState])
+  const updateAValue = useCallback((key:string)=>{
+    console.log("updating a value ",key)
+    const currentInfo = allValues.get(key)
+    console.log("current value", currentInfo?.state)
+    if (currentInfo){
+      setAllValues((prevMap)=>{
+        const newMap = new Map(prevMap)
+        newMap.set(
+          key, 
+          {...currentInfo, state: incrementState(currentInfo.state)}
+        )
+        return newMap
+      })
+    };
+  },[allValues])
 
   return <>
-    <Checkbox state={checkState} onClick={updateCheck}/>
-    {/* <AlternateCheckbox state={checkState} onClick={updateCheck}/> */}
-    <DifferentCheckbox state={checkState} onClick={updateCheck} />
+    {/* <Checkbox state={checkState} onClick={updateCheck}/> */}
+    <Row values={[...allValues.values()]} onUpdateCheckbox={updateAValue}/>
   </>;
 }

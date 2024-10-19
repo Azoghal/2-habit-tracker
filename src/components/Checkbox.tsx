@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { CheckboxInfo } from "@/pages";
+import { useEffect, useRef } from "react";
 
 export enum CheckboxState {
     Empty = 1,
@@ -8,22 +9,37 @@ export enum CheckboxState {
 
 interface ICheckboxProps {
     onClick():void;
-    state: CheckboxState
+    info: CheckboxInfo;
 }
 
-export default function Checkbox(props: ICheckboxProps) {    
-    const className = useMemo(()=>{
-        console.log("regenerating classname")
-        switch (props.state){
-        case CheckboxState.Empty:
-            return "checkbox-inner checkbox-inner__empty"
-        case CheckboxState.Half:
-            return "checkbox-inner checkbox-inner__half"
-        case CheckboxState.Full:
-            return "checkbox-inner checkbox-inner__full"
-        } 
-    }, [props.state])
+export function Checkbox(props: ICheckboxProps) {
+    const cRef = useRef(null);
 
-    return <div className={className} onClick={props.onClick}/>
-  }
+    console.log("my rendery props", props.info)
+  
+    useEffect(() => {
+      if (cRef.current) {
+        // @ts-ignore
+        cRef.current.indeterminate =
+         props.info.state == CheckboxState.Half
+      };
+    }, [cRef, props.info.state]);
+  
+    return (
+      <div className="checkbox-content" onClick={props.onClick}>
+        <label>
+          <input
+            type="checkbox"
+            name={props.info.key}
+            // value={}
+            checked={props.info.state==CheckboxState.Full}
+            onClick={()=>{}}
+            onChange={()=>{}}
+            ref={cRef}
+          />
+          <span>{props.info.key}</span>
+        </label>
+      </div>
+    );
+  };
   
