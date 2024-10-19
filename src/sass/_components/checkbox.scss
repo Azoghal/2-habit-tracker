@@ -1,0 +1,25 @@
+@use "../_vars/colours" as *;
+@use "../_vars/variables" as *;
+.checkbox-inner {
+
+    // line-height:0;
+    width:0;
+
+
+    // TODO variablise
+
+    &__empty {
+        border-top:$checkbox-width solid transparent;
+        border-right:$checkbox-width solid transparent;
+    }
+   
+    &__half {
+        border-top:$checkbox-width solid $checkbox-fill;
+        border-right:$checkbox-width solid transparent;
+    }
+
+    &__full{
+        border-top:$checkbox-width solid $checkbox-fill;
+        border-right:$checkbox-width solid $checkbox-fill;
+    }
+}

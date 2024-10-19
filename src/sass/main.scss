@@ -1,20 +1,16 @@
 @charset "utf-8";
 
-// @import 
+// @use 
 //     "node_modules/bulma/sass/grid/columns.sass";
 
-@import
-    "_vars/colours",
-    "_vars/fonts",
-    "_vars/variables";
+@forward "_vars/_colours";
+@forward "_vars/_fonts";
+@forward "_vars/_variables";
+@forward "_base/_base";
+@forward "_base/_helpers";
+@forward "_base/_typography";
 
-@import 
-    "_base/base",
-    "_base/helpers",
-    "_base/typography";
-
-// @import 
-//     "_components/button", 
+@use "_components/checkbox";
 //     "_components/logo", 
 //     "_components/card",
 //     "_components/header",

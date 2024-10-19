@@ -1,3 +1,7 @@
+@use "../_vars/_variables" as *;
+@use "../_vars/_fonts" as *;
+@use "../_vars/_colours" as *;
+
 body {
     background-color: $body-bg;
     color: $body-colour;
@@ -13,7 +17,7 @@ a {
     text-decoration: none;
 }
 a:hover {
-    color: $main-pink;
+    color: $light-green;
 }
 
 h1 {
