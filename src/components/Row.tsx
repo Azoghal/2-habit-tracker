@@ -6,22 +6,38 @@ import { CheckboxInfo } from "@/pages";
 
 interface IRowProps{
     values: CheckboxInfo[];
-    onUpdateCheckbox: (key:string)=>void;
+    onUpdateCheckbox: (key:number)=>void;
+    currentDay: number;
+    lockPast:boolean;
+    lockFuture: boolean;
+    title: string;
+}
+
+function shouldLock(currentDay: number, day:number, lockPast:boolean, lockFuture:boolean):boolean {
+    if (day < currentDay && lockPast) {
+        return true
+    }
+    if (day > currentDay && lockFuture){
+        return true
+    }
+    return false
 }
 
 export default function Row(props:IRowProps) {
 
     console.log("my row rendery props", props.values)
 
-    const row = useMemo(()=>{
-        return props.values.map((info)=>{
-            return <Checkbox key={info.key} info={info} onClick={()=>{props.onUpdateCheckbox(info.key)}}/>
-        })
-    },[props.values])
-
     return <>
         <div className="row">
-            {row}
+            <span>{props.title}</span>
+            {props.values.map((info)=>{
+            return <Checkbox 
+                key={info.key} 
+                info={info} 
+                disabled={shouldLock(props.currentDay, info.key, props.lockPast, props.lockFuture)} 
+                onClick={()=>{props.onUpdateCheckbox(info.key)}}
+            />
+        })}
         </div>
     </>
 }
