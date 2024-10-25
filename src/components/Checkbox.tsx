@@ -1,9 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
 export enum CheckboxState {
-    Empty = 1,
-    Half = 2,
-    Full = 3,
+    Empty = 0,
+    Half = 1,
+    Full = 2,
+}
+
+export function CheckboxStateFromInt(s: number): CheckboxState {
+  switch (s){
+    case 1: 
+      return CheckboxState.Half;
+    case 2: 
+      return CheckboxState.Full;
+    default: 
+      return CheckboxState.Empty;
+  }
 }
 
 export interface CheckboxInfo{
