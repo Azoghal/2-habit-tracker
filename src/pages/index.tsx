@@ -50,7 +50,9 @@ export default function Index() {
     return false
   }, [today, lockPast, lockFuture])
 
+  // TODO rather than hardcode this, we can deserialise this from json
   const [tableState, setTableState] = useState<ITableProps>({
+    title: "Habits",
     categories: [
       {
         title: "Exercise",
@@ -63,13 +65,47 @@ export default function Index() {
                 onClick: ()=>{console.log("try to update", yesterday)},
                 state: CheckboxState.Half,
                 locked: shouldLock(yesterday)
+              },
+              {
+                key: today,
+                onClick: ()=>{console.log("try to update", today)},
+                state: CheckboxState.Empty,
+                locked: shouldLock(today)
+              },
+              {
+                key: tomorrow,
+                onClick: ()=>{console.log("try to update", tomorrow)},
+                state: CheckboxState.Empty,
+                locked: shouldLock(tomorrow)
+              }
+            ]
+          },
+          {
+            title: "Cycling",
+            values: [
+              {
+                key: yesterday,
+                onClick: ()=>{console.log("try to update", yesterday)},
+                state: CheckboxState.Full,
+                locked: shouldLock(yesterday)
+              },
+              {
+                key: today,
+                onClick: ()=>{console.log("try to update", today)},
+                state: CheckboxState.Empty,
+                locked: shouldLock(today)
+              },
+              {
+                key: tomorrow,
+                onClick: ()=>{console.log("try to update", tomorrow)},
+                state: CheckboxState.Empty,
+                locked: shouldLock(tomorrow)
               }
             ]
           }
         ],
       }
-    ],
-    title: "Habits"
+    ]
   } as ITableProps)
 
   const loadData = useCallback(()=>{
