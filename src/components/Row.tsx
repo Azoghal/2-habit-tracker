@@ -1,10 +1,9 @@
 // a row of checkboxes
 
-import { useCallback, useMemo, useState } from "react";
-import { Checkbox, CheckboxState } from "./Checkbox";
+import { Checkbox } from "./Checkbox";
 import { CheckboxInfo } from "@/pages";
 
-interface IRowProps{
+export interface IRowProps{
     values: CheckboxInfo[];
     onUpdateCheckbox: (key:number)=>void;
     currentDay: number;
