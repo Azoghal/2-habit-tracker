@@ -1,16 +1,16 @@
-import { CheckboxInfo } from "@/pages";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
 export enum CheckboxState {
     Empty = 1,
-    Half,
-    Full,
+    Half = 2,
+    Full = 3,
 }
 
-interface ICheckboxProps {
-    onClick():void;
-    info: CheckboxInfo;
-    disabled: boolean;
+export interface CheckboxInfo{
+  onClick():void;
+  key: number // unix timestamp in seconds, should be 12:00pm UTC
+  state: CheckboxState
+  locked: boolean
 }
 
 function backToDate(epochSeconds: number): Date{
@@ -22,28 +22,28 @@ function formatShortDate(date: Date): string{
   return date.toLocaleDateString("en-US", { day: "numeric", month: "short" });
 }
 
-export function Checkbox(props: ICheckboxProps) {
+export function Checkbox(props: CheckboxInfo) {
     const cRef = useRef(null);
 
-    console.log("my rendery props", props.info)
+    // console.log("my rendery props", props)
   
     useEffect(() => {
       if (cRef.current) {
         // @ts-ignore
         cRef.current.indeterminate =
-         props.info.state == CheckboxState.Half
+         props.state == CheckboxState.Half
       };
-    }, [cRef, props.info.state]);
+    }, [cRef, props.state]);
 
     const name = useMemo(()=>{
-      return formatShortDate(backToDate(props.info.key))
-    },[props.info.key])
+      return formatShortDate(backToDate(props.key))
+    },[props.key])
 
     const onLocalClick = useCallback(()=>{
-      if(!props.disabled){
+      if(!props.locked){
         props.onClick()
       }
-    }, [props.onClick, props.disabled])
+    }, [props.onClick, props.locked])
   
     return (
       <div className="checkbox-container" onClick={onLocalClick}>
@@ -52,9 +52,9 @@ export function Checkbox(props: ICheckboxProps) {
             type="checkbox"
             className="checkbox-inner"
             name={name}
-            disabled={props.disabled}
+            disabled={props.locked}
             // value={}
-            checked={props.info.state==CheckboxState.Full}
+            checked={props.state==CheckboxState.Full}
             onClick={()=>{}}
             onChange={()=>{}}
             ref={cRef}

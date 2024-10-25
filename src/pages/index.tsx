@@ -1,12 +1,8 @@
-import { Checkbox, CheckboxState } from "@/components/Checkbox";
-import Row from "@/components/Row";
-import { useCallback, useMemo, useState } from "react";
+import { CheckboxState } from "@/components/Checkbox";
+import Table, { ITableProps} from "@/components/Table";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 
-export interface CheckboxInfo{
-  key: number // unix timestamp in seconds, should be 12:00pm UTC
-  state: CheckboxState
-}
 
 function incrementState(checkState: CheckboxState){
   switch(checkState){
@@ -25,37 +21,77 @@ function getTodayMidday(){
   return Math.floor(now.getTime()/1000);
 }
 
+
+
 export default function Index() {
 
   const daySeconds = 86400;
   const today = getTodayMidday();
-  const yesterday = today - daySeconds;
+  const yesterday = today - daySeconds; // TODO remove eventually, just for hardcoding
   const tomorrow = today + daySeconds;
 
-  const [allValues, setAllValues] = useState<Map<number, CheckboxInfo>>(new Map(
-    [[yesterday, {key: yesterday,  state:CheckboxState.Empty}],
-     [today, {key: today,  state:CheckboxState.Empty}],
-     [tomorrow, {key: tomorrow,  state:CheckboxState.Empty}]]
-  ))
+  // const [allValues, setAllValues] = useState<Map<number, CheckboxInfo>>(new Map(
+  //   [[yesterday, {key: yesterday,  state:CheckboxState.Empty}],
+  //    [today, {key: today,  state:CheckboxState.Empty}],
+  //    [tomorrow, {key: tomorrow,  state:CheckboxState.Empty}]]
+  // ))
 
+  const [currentDate, setCurrentDate] = useState(getTodayMidday());
   const [lockPast, setLockPast] = useState(true);
   const [lockFuture, setLockFuture] = useState(true);
 
-  const updateAValue = useCallback((key:number)=>{
-    console.log("updating a value ",key)
-    const currentInfo = allValues.get(key)
-    console.log("current value", currentInfo?.state)
-    if (currentInfo){
-      setAllValues((prevMap)=>{
-        const newMap = new Map(prevMap)
-        newMap.set(
-          key, 
-          {...currentInfo, state: incrementState(currentInfo.state)}
-        )
-        return newMap
-      })
-    };
-  },[allValues])
+  const shouldLock = useCallback((day: number)=>{
+    if (day < today && lockPast) {
+        return true
+    }
+    if (day > today && lockFuture){
+        return true
+    }
+    return false
+  }, [today, lockPast, lockFuture])
+
+  const [tableState, setTableState] = useState<ITableProps>({
+    categories: [
+      {
+        title: "Exercise",
+        rows: [
+          {
+            title: "Running",
+            values: [
+              {
+                key: yesterday,
+                onClick: ()=>{console.log("try to update", yesterday)},
+                state: CheckboxState.Half,
+                locked: shouldLock(yesterday)
+              }
+            ]
+          }
+        ],
+      }
+    ],
+    title: "Habits"
+  } as ITableProps)
+
+  const loadData = useCallback(()=>{
+
+  }, [])
+
+  // const updateAValue = useCallback((key:number)=>{
+  //   console.log("updating a value ",key)
+  //   const currentInfo = allValues.get(key)
+  //   console.log("current value", currentInfo?.state)
+  //   if (currentInfo){
+  //     // TODO update this to update the new thing
+  //     setAllValues((prevMap)=>{
+  //       const newMap = new Map(prevMap)
+  //       newMap.set(
+  //         key, 
+  //         {...currentInfo, state: incrementState(currentInfo.state)}
+  //       )
+  //       return newMap
+  //     })
+  //   };
+  // },[allValues])
 
   const toggleLockPast = useCallback(()=>{
     setLockPast((prev)=>!prev)
@@ -65,10 +101,15 @@ export default function Index() {
     setLockFuture((prev)=>!prev)
   }, [lockPast])
 
+  useEffect(()=>{
+    loadData()
+  },[])
+
   return <>
     {/* <Checkbox state={checkState} onClick={updateCheck}/> */}
     <button className="" onClick={toggleLockPast}>{lockPast? "🔒":"🔓"} Past</button>
     <button onClick={toggleLockFuture}>{lockFuture?"🔒":"🔓"} Future</button>
-    <Row title={"Code"} values={[...allValues.values()]} onUpdateCheckbox={updateAValue} currentDay={today} lockPast={lockPast} lockFuture={lockFuture}/>
+    {/* <Row title={"Code"} values={[...allValues.values()]} onUpdateCheckbox={updateAValue} currentDay={today} lockPast={lockPast} lockFuture={lockFuture}/> */}
+    {<Table {...tableState}/>}
   </>;
 }

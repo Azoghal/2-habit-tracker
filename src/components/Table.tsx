@@ -1,16 +1,9 @@
 // a row of checkboxes
+import  Category, { ICategoryProps }  from "./Category";
 
-import Row, { IRowProps } from "./Row";
-import { CheckboxInfo } from "@/pages";
-import Section from "./Section";
 
-interface Category{
-    title: string,
-    rows: IRowProps[]
-}
-
-interface ITableProps{
-    sections: Category[];
+export interface ITableProps{
+    categories: ICategoryProps[];
     onUpdateCheckbox: (key:number)=>void;
     currentDay: number;
     lockPast:boolean;
@@ -18,19 +11,15 @@ interface ITableProps{
     title: string;
 }
 
-
-
 export default function Table(props:ITableProps) {
 
-    console.log("my table sections", props.sections.map((section)=>{return section.title}))
+    console.log("my table sections", props.categories.map((category)=>{return category.title}))
 
     return <>
-        <div className="row">
+        <div className="table">
             <span>{props.title}</span>
-            {props.sections.map((section)=>{
-            return <Section
-                rows={section.rows}
-            />
+            {props.categories.map((category)=>{
+            return <Category {...category}/>  
         })}
         </div>
     </>
