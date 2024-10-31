@@ -1,3 +1,4 @@
+import { IActivity } from "@/types/habits";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
 export enum CheckboxState {
@@ -17,6 +18,15 @@ export function CheckboxStateFromInt(s: number): CheckboxState {
   }
 }
 
+// TODO turn this into IActivity + locked + onClick
+export interface ICheckboxProps{
+  date: number;
+  value: number;
+  state: CheckboxState
+  locked: boolean;
+  onClick():void;
+}
+
 export interface CheckboxInfo{
   onClick():void;
   key: number // unix timestamp in seconds, should be 12:00pm UTC
@@ -33,7 +43,7 @@ function formatShortDate(date: Date): string{
   return date.toLocaleDateString("en-US", { day: "numeric", month: "short" });
 }
 
-export function Checkbox(props: CheckboxInfo) {
+export function Checkbox(props: ICheckboxProps) {
     const cRef = useRef(null);
 
     // console.log("my rendery props", props)
@@ -42,13 +52,13 @@ export function Checkbox(props: CheckboxInfo) {
       if (cRef.current) {
         // @ts-ignore
         cRef.current.indeterminate =
-         props.state == CheckboxState.Half
+         props.value == CheckboxState.Half
       };
-    }, [cRef, props.state]);
+    }, [cRef, props.value]);
 
     const name = useMemo(()=>{
-      return formatShortDate(backToDate(props.key))
-    },[props.key])
+      return formatShortDate(backToDate(props.date))
+    },[props.value])
 
     const onLocalClick = useCallback(()=>{
       if(!props.locked){

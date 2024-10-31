@@ -7,22 +7,22 @@
 // These functions will throw an error if the JSON doesn't
 // match the expected interface, even if the JSON is valid.
 
-export interface Habits {
+export interface IHabits {
     title:      string;
-    categories: Category[];
+    categories: ICategory[];
 }
 
-export interface Category {
+export interface ICategory {
     title:  string;
-    habits: Habit[];
+    habits: IHabit[];
 }
 
-export interface Habit {
+export interface IHabit {
     title:      string;
-    activities: Activity[];
+    activities: IActivity[];
 }
 
-export interface Activity {
+export interface IActivity {
     date:  number;
     value: number;
 }
@@ -30,11 +30,11 @@ export interface Activity {
 // Converts JSON strings to/from your types
 // and asserts the results of JSON.parse at runtime
 export class Convert {
-    public static toHabits(json: string): Habits {
+    public static toHabits(json: string): IHabits {
         return cast(JSON.parse(json), r("Habits"));
     }
 
-    public static habitsToJson(value: Habits): string {
+    public static habitsToJson(value: IHabits): string {
         return JSON.stringify(uncast(value, r("Habits")), null, 2);
     }
 }

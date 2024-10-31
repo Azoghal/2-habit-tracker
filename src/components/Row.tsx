@@ -1,21 +1,18 @@
 // a row of checkboxes
 
-import { Checkbox, CheckboxInfo } from "./Checkbox";
+import { IHabit } from "@/types/habits";
+import { Checkbox, CheckboxStateFromInt } from "./Checkbox";
 
-export interface IRowProps{
-    values: CheckboxInfo[];
-    title: string;
-}
+export default function Row(props:IHabit) {
 
-export default function Row(props:IRowProps) {
-
-    console.log("my row rendery props", props.values)
+    console.log("my row rendery props", props.activities)
 
     return <>
         <div className="row">
             <span>{props.title}</span>
-            {props.values.map((info)=>{
-            return <Checkbox {...info}/>
+            {props.activities.map((activity)=>{
+                // TODO lift the locked, onClick, conversion to state into the props
+            return <Checkbox onClick={()=>{}} date={activity.date} value={activity.value} state={CheckboxStateFromInt(activity.value)} locked={false}/>
         })}
         </div>
     </>
