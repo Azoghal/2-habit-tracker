@@ -27,12 +27,12 @@ export interface ICheckboxProps{
   onClick():void;
 }
 
-export interface CheckboxInfo{
-  onClick():void;
-  key: number // unix timestamp in seconds, should be 12:00pm UTC
-  state: CheckboxState
-  locked: boolean
-}
+// export interface CheckboxInfo{
+//   onClick():void;
+//   key: number // unix timestamp in seconds, should be 12:00pm UTC
+//   state: CheckboxState
+//   locked: boolean
+// }
 
 function backToDate(epochSeconds: number): Date{
   const date = new Date(epochSeconds * 1000);

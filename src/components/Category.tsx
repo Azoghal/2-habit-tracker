@@ -1,8 +1,11 @@
-import { ICategory } from "@/types/habits";
-import Row from "./Row";
+import Row, { IRowProps } from "./Row";
 
+export interface ICategoryProps{
+    title: string,
+    habits: IRowProps[],
+}
 
-export default function Category(props: ICategory) {
+export default function Category(props: ICategoryProps) {
 
     console.log("my section rows", props.habits.map((row)=>{return row.title}))
 

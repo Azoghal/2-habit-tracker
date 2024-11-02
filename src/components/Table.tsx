@@ -1,9 +1,14 @@
 // a row of checkboxes
 import { IHabits } from "@/types/habits";
-import  Category  from "./Category";
+import  Category, { ICategoryProps }  from "./Category";
 
 
-export default function Table(props:IHabits) {
+export interface ITableProps {
+    title: string,
+    categories: ICategoryProps[]
+}
+
+export default function Table(props:ITableProps) {
 
     console.log("my table sections", props.categories.map((category)=>{return category.title}))
 
