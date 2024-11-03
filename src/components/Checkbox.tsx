@@ -18,7 +18,7 @@ export function CheckboxStateFromInt(s: number): CheckboxState {
   }
 }
 
-// TODO turn this into IActivity + locked + onClick
+// TODO turn this into IActivity + locked + onClick. Maybe this means turning everything into types and using pick
 export interface ICheckboxProps{
   date: number;
   value: number;

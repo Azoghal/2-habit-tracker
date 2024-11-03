@@ -14,7 +14,7 @@ export default function Category(props: ICategoryProps) {
         <div className="category">
             <span>{props.title}</span>
             {props.habits.map((habit)=>{
-            return <Row {...habit}/>
+            return <Row {...habit} key={habit.title}/>
         })}
         </div>
     </>
