@@ -3,8 +3,8 @@ import { CheckboxState, CheckboxStateFromInt, ICheckboxProps } from "@/component
 import { IRowProps } from "@/components/Row";
 import Table, { ITableProps } from "@/components/Table";
 import { Convert, IActivity, ICategory, IHabit, IHabits } from "@/types/habits";
-import { useCallback, useEffect, useMemo, useState } from "react";
-
+import { useCallback, useEffect, useState } from "react";
+import { useCookies, CookiesProvider } from "react-cookie";
 
 
 function incrementState(checkState: CheckboxState){
@@ -52,9 +52,10 @@ export default function Index() {
   const [lockPast, setLockPast] = useState(true);
   const [lockFuture, setLockFuture] = useState(true);
 
-  const [habits, setHabits] = useState<ITableProps>();
+  const [habits, setHabits] = useState<ITableProps>(enrichHabits(Convert.toHabits(jsonData), currentDate, lockFuture, lockPast));
 
   const loadData = useCallback(()=>{
+    // TODO get the jsonData from cookie
     setHabits(enrichHabits(Convert.toHabits(jsonData), currentDate, lockFuture, lockPast))
   }, [])
 
@@ -71,6 +72,7 @@ export default function Index() {
   }, [lockPast])
 
   useEffect(()=>{
+    // TODO on load, we should check if cookie exists. If it does, pull from there, otherwise, initialise empty
     loadData()
   },[])
 
@@ -81,7 +83,9 @@ export default function Index() {
       console.log("no habits")
       return
     }
-    Convert.habitsToJson(habits)
+    const b  = Convert.habitsToJson(backToHabits(habits))
+
+    console.log(b);
   }, [])
 
   return <>
@@ -121,7 +125,7 @@ function enrichHabits(table: IHabits, today: number, lockForwards: boolean, lock
   return res
 }
 
-function backToHbits(table: ITableProps): IHabits {
+function backToHabits(table: ITableProps): IHabits {
   const categories: ICategory[] = table.categories.map((c)=>{
     const habits: IHabit[] = c.habits.map((h)=>{
       const activities: IActivity[] = h.activities.map((a)=>{
