@@ -7,8 +7,6 @@ export interface ICategoryProps{
 
 export default function Category(props: ICategoryProps) {
 
-    console.log("my section rows", props.habits.map((row)=>{return row.title}))
-
     // TODO styling
     return <>
         <div className="category">

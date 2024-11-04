@@ -10,8 +10,6 @@ export interface IRowProps {
 
 export default function Row(props:IRowProps) {
 
-    console.log("my row rendery props", props.activities)
-
     return <>
         <div className="row">
             <span>{props.title}</span>

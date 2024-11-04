@@ -45,8 +45,6 @@ function formatShortDate(date: Date): string{
 
 export function Checkbox(props: ICheckboxProps) {
     const cRef = useRef(null);
-
-    // console.log("my rendery props", props)
   
     useEffect(() => {
       if (cRef.current) {
