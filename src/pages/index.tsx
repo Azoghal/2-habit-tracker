@@ -13,8 +13,10 @@ export default function Index() {
 
   const [cookies, setCookie] = useCookies(['habitsCookie'])
 
+
+  // TODO base64 this before we cookify it
+
   const setDefaultCookie = useCallback(()=>{
-    conseol.log("setting default cookie")
     setCookie("habitsCookie", `{ "title":"Habits of Sam", 
       "categories": [
         {
@@ -36,9 +38,8 @@ export default function Index() {
     }
   }, [])
 
+  // TODO should do something to verify the type is right.
   return <CookiesProvider>
-    <>hasCookie:{cookies.habitsCookie == undefined ? "yes" : "no"}</>
-    <button onClick={setDefaultCookie}>set cookie</button>
-    <Habits/>
+    {cookies.habitsCookie ? <Habits data={cookies.habitsCookie}/> : <button onClick={setDefaultCookie}>set cookie</button>}
   </CookiesProvider>;
 }

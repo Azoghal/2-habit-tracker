@@ -10,40 +10,30 @@ function getTodayMidday(){
     now.setUTCHours(12, 0, 0, 0);
     return Math.floor(now.getTime()/1000);
 }
-  
-  // const jsonRep = `{"title": "Habits of Sam", "categories": [{"title":"Exercise","habits":}]}`
-  
-  export default function Habits() {
-  
+
+export interface IHabitsProps {
+    data: IHabits // this should be a habits but i'm feeling,, lazy/pragmatic for now
+}
+    
+export default function Habits(props: IHabitsProps) {
     const daySeconds = 86400;
     const today = getTodayMidday();
     const yesterday = today - daySeconds; // TODO remove eventually, just for hardcoding
     const tomorrow = today + daySeconds;
+
+    // TODO for now, use the range yesterday -> tomorrow as the range to fill in, if there is nothing present.
   
-    const [jsonData, setJsonData] = useState<string>(`{
-      "title":"Habits of Sam", 
-      "categories": [
-        {
-          "title":"Exercise",
-          "habits": [
-            {
-              "title":"Running",
-              "activities":[{"date":${yesterday}, "value":2}, {"date":${today}, "value":1}, {"date":${tomorrow}, "value":0}]
-            }
-          ]
-        }
-      ]
-    }`)
+    const [jsonData, setJsonData] = useState(props.data)
   
     const [currentDate, setCurrentDate] = useState(getTodayMidday());
     const [lockPast, setLockPast] = useState(true);
     const [lockFuture, setLockFuture] = useState(true);
   
-    const [habits, setHabits] = useState<ITableProps>(enrichHabits(Convert.toHabits(jsonData), currentDate, lockFuture, lockPast));
+    const [habits, setHabits] = useState<ITableProps>(enrichHabits(jsonData, currentDate, lockFuture, lockPast));
   
     const loadData = useCallback(()=>{
       // TODO get the jsonData from cookie
-      setHabits(enrichHabits(Convert.toHabits(jsonData), currentDate, lockFuture, lockPast))
+      setHabits(enrichHabits(jsonData, currentDate, lockFuture, lockPast))
     }, [])
   
     useEffect(()=>{
