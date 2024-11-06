@@ -12,7 +12,7 @@ function getTodayMidday(){
 }
 
 export interface IHabitsProps {
-    data: IHabits // this should be a habits but i'm feeling,, lazy/pragmatic for now
+    data: IHabits // TODO use maps in the types - it's the right data type. would be ideal if the parser generator could do us maps, have a go
     updateHabits(newHabits: IHabits): void;
 }
 
