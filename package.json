@@ -12,7 +12,8 @@
     "preview": "turbo vite.preview",
     "vite.build": "vite build",
     "vite.dev": "vite --host",
-    "vite.preview": "vite preview"
+    "vite.preview": "vite preview",
+    "test": "vitest"
   },
   "dependencies": {
     "react": "18.3.1",
@@ -27,12 +28,12 @@
     "@types/node": "20.16.13",
     "@types/react": "18.3.11",
     "@types/react-dom": "18.3.1",
-    "@vitejs/plugin-react-swc": "3.7.1",
     "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@vitejs/plugin-react-swc": "3.7.1",
+    "autoprefixer": "10.4.20",
     "eslint": "^9.14.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react-hooks": "^5.0.0",
-    "autoprefixer": "10.4.20",
     "is-ci": "3.0.1",
     "lightningcss": "1.27.0",
     "prettier": "3.3.3",
@@ -41,6 +42,7 @@
     "typescript": "5.6.3",
     "vite": "5.4.9",
     "vite-plugin-mkcert": "1.17.6",
-    "vite-tsconfig-paths": "5.0.1"
+    "vite-tsconfig-paths": "5.0.1",
+    "vitest": "^2.1.4"
   }
 }

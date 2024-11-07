@@ -3,7 +3,12 @@ import { CheckboxStateFromInt, ICheckboxProps } from "@/components/Checkbox";
 import { IRowProps } from "@/components/Row";
 import Table, { ITableProps } from "@/components/Table";
 import { Convert, IActivity, ICategory, IHabit, IHabits } from "@/types/habits";
-import { useCallback, useEffect, useState } from "react";
+import {
+  IHabitsMapped,
+  mapifyHabits,
+  unmapifyHabits,
+} from "@/types/habitsMaps";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 function getTodayMidday() {
   const now = new Date();
@@ -25,15 +30,57 @@ export default function Habits(props: IHabitsProps) {
 
   // TODO for now, use the range yesterday -> tomorrow as the range to fill in, if there is nothing present.
 
-  const [stagedData, setStagedData] = useState(props.data);
+  // TODO rationalise the whole thing
+  // 1. Populate the object to have all the relevant dates
+  // 2. Convert them to suitable for props with enrich
+
+  const [rawHabits, setRawHabits] = useState<IHabits>(props.data);
+  const [mappedHabits, setMappedHabits] = useState<IHabitsMapped>(
+    mapifyHabits(props.data)
+  );
+
+  const updateABox = useCallback(
+    (category: string, habit: string, date: number, value: number) => {
+      setMappedHabits((old) => {
+        if (!old) return old;
+
+        const newMappedHabits = { ...old };
+        const newCategory = newMappedHabits.categories.get(category) || {
+          habits: new Map(),
+        };
+        const newHabit = newCategory.habits.get(habit) || {
+          activities: new Map(),
+        };
+
+        const cappedValue = value;
+        if (value > 2) {
+          value = 1;
+        }
+
+        newHabit.activities.set(date, cappedValue);
+        newCategory.habits.set(habit, newHabit);
+        newMappedHabits.categories.set(category, newCategory);
+
+        console.log("newMapped", newMappedHabits);
+        return newMappedHabits;
+      });
+    },
+    [setMappedHabits]
+  );
+
+  useEffect(() => {
+    const unmapped = unmapifyHabits(mappedHabits);
+    console.log("unmapped", unmapped);
+    setRawHabits(unmapped);
+  }, [mappedHabits, setRawHabits]);
 
   const [currentDate, setCurrentDate] = useState(getTodayMidday());
   const [lockPast, setLockPast] = useState(true);
   const [lockFuture, setLockFuture] = useState(true);
 
   /// propifies everything - that is present. Missing dates should be generated using fillDates
-  const enrichHabits = useCallback(() => {
-    const categories: ICategoryProps[] = stagedData.categories.map((c) => {
+  const enrichedHabits = useMemo(() => {
+    const categories: ICategoryProps[] = rawHabits.categories.map((c) => {
       const habits: IRowProps[] = c.habits.map((h) => {
         const activities: ICheckboxProps[] = h.activities.map((a) => {
           const activity: ICheckboxProps = {
@@ -42,7 +89,10 @@ export default function Habits(props: IHabitsProps) {
             // locked: false,
             locked:
               (a.date < today && lockPast) || (a.date > today && lockFuture),
-            onClick: () => {},
+            onClick: () => {
+              console.log("onClick", h.title, a.date);
+              updateABox(c.title, h.title, a.date, a.value + 1);
+            },
           };
           return activity;
         });
@@ -55,17 +105,17 @@ export default function Habits(props: IHabitsProps) {
     });
 
     const res: ITableProps = {
-      title: stagedData.title,
+      title: rawHabits.title,
       categories: categories,
     };
     return res;
-  }, []);
+  }, [rawHabits, lockPast, lockFuture, today, updateABox]);
 
-  const [habits, setHabits] = useState<ITableProps>(enrichHabits());
+  const [habits, setHabits] = useState<ITableProps>(enrichedHabits);
 
   const loadData = useCallback(() => {
     // TODO get the jsonData from cookie
-    setHabits(enrichHabits());
+    setHabits(enrichedHabits);
   }, []);
 
   useEffect(() => {
@@ -85,18 +135,6 @@ export default function Habits(props: IHabitsProps) {
     loadData();
   }, []);
 
-  // see if we can jsonify ITableProps directly
-  const testThinger = useCallback(() => {
-    console.log("I'm going to jsonify ITableProps");
-    if (habits == undefined) {
-      console.log("no habits");
-      return;
-    }
-    const b = Convert.habitsToJson(backToHabits(habits));
-
-    console.log(b);
-  }, []);
-
   return (
     <>
       {/* <Checkbox state={checkState} onClick={updateCheck}/> */}
@@ -106,7 +144,6 @@ export default function Habits(props: IHabitsProps) {
       <button onClick={toggleLockFuture}>
         {lockFuture ? "🔒" : "🔓"} Future
       </button>
-      <button onClick={testThinger}>Press me</button>
       {/* <Row title={"Code"} values={[...allValues.values()]} onUpdateCheckbox={updateAValue} currentDay={today} lockPast={lockPast} lockFuture={lockFuture}/> */}
       {habits && <Table {...habits} />}
     </>
