@@ -44,7 +44,7 @@ function invalidValue(typ: any, val: any, key: any, parent: any = ""): never {
   const parentText = parent ? ` on ${parent}` : "";
   const keyText = key ? ` for key "${key}"` : "";
   throw Error(
-    `Invalid value${keyText}${parentText}. Expected ${prettyTyp} but got ${JSON.stringify(val)}`,
+    `Invalid value${keyText}${parentText}. Expected ${prettyTyp} but got ${JSON.stringify(val)}`
   );
 }
 
@@ -89,7 +89,7 @@ function transform(
   typ: any,
   getProps: any,
   key: any = "",
-  parent: any = "",
+  parent: any = ""
 ): any {
   function transformPrimitive(typ: string, val: any): any {
     if (typeof typ === typeof val) return val;
@@ -116,7 +116,7 @@ function transform(
       }),
       val,
       key,
-      parent,
+      parent
     );
   }
 
@@ -140,7 +140,7 @@ function transform(
   function transformObject(
     props: { [k: string]: any },
     additional: any,
-    val: any,
+    val: any
   ): any {
     if (val === null || typeof val !== "object" || Array.isArray(val)) {
       return invalidValue(l(ref || "object"), val, key, parent);
@@ -228,27 +228,27 @@ const typeMap: any = {
       { json: "title", js: "title", typ: "" },
       { json: "categories", js: "categories", typ: a(r("Category")) },
     ],
-    false,
+    false
   ),
   Category: o(
     [
       { json: "title", js: "title", typ: "" },
       { json: "habits", js: "habits", typ: a(r("Habit")) },
     ],
-    false,
+    false
   ),
   Habit: o(
     [
       { json: "title", js: "title", typ: "" },
       { json: "activities", js: "activities", typ: a(r("Activity")) },
     ],
-    false,
+    false
   ),
   Activity: o(
     [
       { json: "date", js: "date", typ: 0 },
       { json: "value", js: "value", typ: 0 },
     ],
-    false,
+    false
   ),
 };
