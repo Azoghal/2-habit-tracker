@@ -59,7 +59,7 @@ export default function Habits(props: IHabitsProps) {
       categories: categories,
     };
     return res;
-  }, [stagedData, lockPast, lockFuture, today]);
+  }, []);
 
   const [habits, setHabits] = useState<ITableProps>(enrichHabits());
 
@@ -120,7 +120,7 @@ function fillBlanks(
   row: IRowProps,
   today: number,
   backwards: number,
-  forwards: number,
+  forwards: number
 ): IRowProps {
   const createEmpty: (date: number) => ICheckboxProps = (date: number) => {
     return {

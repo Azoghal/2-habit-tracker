@@ -1,14 +1,5 @@
-import { ICategoryProps } from "@/components/Category";
-import {
-  CheckboxState,
-  CheckboxStateFromInt,
-  ICheckboxProps,
-} from "@/components/Checkbox";
 import Habits from "@/components/Habits";
-import { IRowProps } from "@/components/Row";
-import Table, { ITableProps } from "@/components/Table";
-import { Convert, IActivity, ICategory, IHabit, IHabits } from "@/types/habits";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useCookies, CookiesProvider } from "react-cookie";
 
 export default function Index() {

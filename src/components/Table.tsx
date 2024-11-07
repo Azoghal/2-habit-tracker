@@ -1,5 +1,4 @@
 // a row of checkboxes
-import { IHabits } from "@/types/habits";
 import Category, { ICategoryProps } from "./Category";
 
 export interface ITableProps {
