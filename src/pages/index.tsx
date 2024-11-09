@@ -1,4 +1,4 @@
-import Habits from "@/components/Habits";
+import Habits, { getTodayMidday } from "@/components/Habits";
 import { useCallback, useEffect } from "react";
 import { useCookies, CookiesProvider } from "react-cookie";
 
@@ -17,18 +17,17 @@ export default function Index() {
           "habits": [
             {
               "title":"Running",
-              "activities":[]
+              "activities":[${getTodayMidday()}]
             }
           ]
         }
       ]}`,
-      { path: "/" },
+      { path: "/" }
     );
   }, [setCookie]);
 
   useEffect(() => {
     if (!cookies.habitsCookie) {
-      console.log("setting cookie use effect");
       setDefaultCookie();
     }
   }, []);
@@ -40,7 +39,7 @@ export default function Index() {
         <Habits
           data={cookies.habitsCookie}
           updateHabits={() => {
-            console.log("doing a thing");
+            console.log("doing nothing");
           }}
         />
       ) : (

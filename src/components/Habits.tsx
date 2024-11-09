@@ -11,7 +11,7 @@ import {
 } from "@/types/habitsMaps";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-function getTodayMidday() {
+export function getTodayMidday() {
   const now = new Date();
   now.setUTCHours(12, 0, 0, 0);
   return Math.floor(now.getTime() / 1000);
@@ -24,100 +24,70 @@ export interface IHabitsProps {
 
 const daySeconds = 86400;
 
+// TODO rationalise the whole thing
+// 1. Populate the object to have all the relevant dates
+// 2. Convert them to suitable for props with enrich
+
 export default function Habits(props: IHabitsProps) {
   const today = getTodayMidday();
-
-  // TODO rationalise the whole thing
-  // 1. Populate the object to have all the relevant dates
-  // 2. Convert them to suitable for props with enrich
-
-  const [rawHabits, setRawHabits] = useState<IHabits>(props.data);
-  const [mappedHabits, setMappedHabits] = useState<IHabitsMapped>(
-    mapifyHabits(props.data)
-  );
-
-  const updateABox = useCallback(
-    (category: string, habit: string, date: number, value: number) => {
-      setMappedHabits((old) => {
-        if (!old) return old;
-
-        const newMappedHabits = { ...old };
-        const newCategory = newMappedHabits.categories.get(category) || {
-          habits: new Map(),
-        };
-        const newHabit = newCategory.habits.get(habit) || {
-          activities: new Map(),
-        };
-
-        const cappedValue = value;
-        if (value > 2) {
-          value = 1;
-        }
-
-        newHabit.activities.set(date, cappedValue);
-        newCategory.habits.set(habit, newHabit);
-        newMappedHabits.categories.set(category, newCategory);
-
-        console.log("newMapped", newMappedHabits);
-        return newMappedHabits;
-      });
-    },
-    [setMappedHabits]
-  );
-
-  useEffect(() => {
-    const unmapped = unmapifyHabits(mappedHabits);
-    console.log("unmapped", unmapped);
-    setRawHabits(unmapped);
-  }, [mappedHabits, setRawHabits]);
-
-  const [currentDate, setCurrentDate] = useState(getTodayMidday());
   const [lockPast, setLockPast] = useState(true);
   const [lockFuture, setLockFuture] = useState(true);
 
-  /// propifies everything - that is present. Missing dates should be generated using fillDates
-  const enrichedHabits = useMemo(() => {
-    const categories: ICategoryProps[] = rawHabits.categories.map((c) => {
-      const habits: IRowProps[] = c.habits.map((h) => {
-        const activities: ICheckboxProps[] = h.activities.map((a) => {
-          const activity: ICheckboxProps = {
-            ...a,
-            state: CheckboxStateFromInt(a.value),
-            // locked: false,
-            locked:
-              (a.date < today && lockPast) || (a.date > today && lockFuture),
-            onClick: () => {
-              console.log("onClick", h.title, a.date);
-              updateABox(c.title, h.title, a.date, a.value + 1);
-            },
-          };
-          return activity;
+  const [tableHabits, setTableHabits] = useState<ITableProps>();
+
+  const mapHabitsToTableProps = useCallback(
+    (habitsMapped: IHabitsMapped): ITableProps => {
+      const categories = new Map<string, ICategoryProps>();
+      for (const [
+        categoryName,
+        categoryData,
+      ] of habitsMapped.categories.entries()) {
+        const categoryHabits = new Map<string, IRowProps>();
+        for (const [habitName, habitData] of categoryData.habits.entries()) {
+          const habitActivities = new Map<number, ICheckboxProps>();
+          for (const [date, activity] of habitData.activities.entries()) {
+            date != undefined &&
+              habitActivities.set(date, {
+                date: date,
+                value: activity,
+                state: CheckboxStateFromInt(activity),
+                locked:
+                  (date < today && lockPast) || (date > today && lockFuture),
+                onClick: () => {
+                  console.log(
+                    `I been pressed (${categoryName}, ${habitName}, ${date})`
+                  );
+                  // Implement your desired onClick behavior here
+                },
+              });
+          }
+
+          categoryHabits.set(habitName, {
+            title: habitName,
+            activities: habitActivities,
+          });
+        }
+
+        categories.set(categoryName, {
+          title: categoryName,
+          habits: categoryHabits,
         });
-        let row: IRowProps = { title: h.title, activities: activities };
-        row = fillBlanks(row, today, 5, 5);
-        return row;
-      });
-      const category: ICategoryProps = { title: c.title, habits: habits };
-      return category;
-    });
+      }
 
-    const res: ITableProps = {
-      title: rawHabits.title,
-      categories: categories,
-    };
-    return res;
-  }, [rawHabits, lockPast, lockFuture, today, updateABox]);
-
-  const [habits, setHabits] = useState<ITableProps>(enrichedHabits);
-
-  const loadData = useCallback(() => {
-    // TODO get the jsonData from cookie
-    setHabits(enrichedHabits);
-  }, []);
+      return {
+        title: "My Habits", // Replace with your desired title
+        categories: categories,
+      };
+    },
+    [lockFuture, lockPast]
+  );
 
   useEffect(() => {
-    loadData();
-  }, []);
+    const mapp = mapifyHabits(props.data);
+    const filled = fillAll(mapp, today, 5, 5);
+    const propped = mapHabitsToTableProps(filled);
+    setTableHabits(propped);
+  }, [setTableHabits, mapHabitsToTableProps, props.data]);
 
   const toggleLockPast = useCallback(() => {
     setLockPast((prev) => !prev);
@@ -126,11 +96,6 @@ export default function Habits(props: IHabitsProps) {
   const toggleLockFuture = useCallback(() => {
     setLockFuture((prev) => !prev);
   }, [lockPast]);
-
-  useEffect(() => {
-    // TODO on load, we should check if cookie exists. If it does, pull from there, otherwise, initialise empty
-    loadData();
-  }, []);
 
   return (
     <>
@@ -142,9 +107,31 @@ export default function Habits(props: IHabitsProps) {
         {lockFuture ? "🔒" : "🔓"} Future
       </button>
       {/* <Row title={"Code"} values={[...allValues.values()]} onUpdateCheckbox={updateAValue} currentDay={today} lockPast={lockPast} lockFuture={lockFuture}/> */}
-      {habits && <Table {...habits} />}
+      {tableHabits && <Table {...tableHabits} />}
     </>
   );
+}
+
+function fillAll(
+  habits: IHabitsMapped,
+  today: number,
+  backwards: number,
+  forwards: number
+): IHabitsMapped {
+  // Iterate over each category in the habits map
+  for (const [categoryName, category] of habits.categories) {
+    // Iterate over each habit in the category
+    for (const [habitName, habit] of category.habits) {
+      // Fill blanks for the current habit
+      const newHabit = fillBlanks(habit, today, backwards, forwards);
+      // Update the habit in the category map
+      category.habits.set(habitName, newHabit);
+    }
+    // Update the category in the habits map
+    habits.categories.set(categoryName, category);
+  }
+
+  return habits;
 }
 
 // fill blanks puts 0 values in the map between certain dates, if no record exists
@@ -154,17 +141,13 @@ export function fillBlanks(
   backwards: number,
   forwards: number
 ): IHabitMapped {
-  // build the list of activities we need, by creating empty ones when it does not already exist, copying where it does.
-
   const start = today - backwards * daySeconds;
   const end = today + forwards * daySeconds;
   for (let d = start; d <= end; d += daySeconds) {
     if (row.activities.get(d) == undefined) {
       row.activities.set(d, 0);
-      // TODO need row =?
     }
   }
-
   return row;
 }
 

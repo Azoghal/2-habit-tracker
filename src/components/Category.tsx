@@ -2,7 +2,7 @@ import Row, { IRowProps } from "./Row";
 
 export interface ICategoryProps {
   title: string;
-  habits: IRowProps[];
+  habits: Map<string, IRowProps>;
 }
 
 export default function Category(props: ICategoryProps) {
@@ -11,8 +11,8 @@ export default function Category(props: ICategoryProps) {
     <>
       <div className="category">
         <span>{props.title}</span>
-        {props.habits.map((habit) => {
-          return <Row {...habit} key={habit.title} />;
+        {Array.from(props.habits.entries()).map(([title, habit]) => {
+          return <Row {...habit} key={title} />;
         })}
       </div>
     </>

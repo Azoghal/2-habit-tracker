@@ -3,18 +3,16 @@ import Category, { ICategoryProps } from "./Category";
 
 export interface ITableProps {
   title: string;
-  categories: ICategoryProps[];
+  categories: Map<string, ICategoryProps>;
 }
 
 export default function Table(props: ITableProps) {
   return (
-    <>
-      <div className="table">
-        <span>{props.title}</span>
-        {props.categories.map((category) => {
-          return <Category {...category} key={category.title} />;
-        })}
-      </div>
-    </>
+    <div className="table">
+      <span>{props.title}</span>
+      {Array.from(props.categories.entries()).map(([title, category]) => {
+        return <Category {...category} key={title} />;
+      })}
+    </div>
   );
 }

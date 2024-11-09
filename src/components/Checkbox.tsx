@@ -19,6 +19,21 @@ export function CheckboxStateFromInt(s: number): CheckboxState {
 }
 
 // TODO turn this into IActivity + locked + onClick. Maybe this means turning everything into types and using pick
+export interface ITableProps {
+  title: string;
+  categories: Map<string, ICategoryProps>;
+}
+
+export interface ICategoryProps {
+  title: string;
+  habits: Map<string, IRowProps>;
+}
+
+export interface IRowProps {
+  title: string;
+  activities: Map<number, ICheckboxProps>;
+}
+
 export interface ICheckboxProps {
   date: number;
   value: number;
