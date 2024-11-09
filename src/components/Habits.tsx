@@ -2,8 +2,10 @@ import { ICategoryProps } from "@/components/Category";
 import { CheckboxStateFromInt, ICheckboxProps } from "@/components/Checkbox";
 import { IRowProps } from "@/components/Row";
 import Table, { ITableProps } from "@/components/Table";
-import { Convert, IActivity, ICategory, IHabit, IHabits } from "@/types/habits";
+import { IHabits } from "@/types/habits";
 import {
+  fillAll,
+  ICategoryMapped,
   IHabitMapped,
   IHabitsMapped,
   mapifyHabits,
@@ -22,7 +24,7 @@ export interface IHabitsProps {
   updateHabits(newHabits: IHabits): void;
 }
 
-const daySeconds = 86400;
+export const DAY_SECONDS = 86400;
 
 // TODO rationalise the whole thing
 // 1. Populate the object to have all the relevant dates
@@ -33,7 +35,41 @@ export default function Habits(props: IHabitsProps) {
   const [lockPast, setLockPast] = useState(true);
   const [lockFuture, setLockFuture] = useState(true);
 
+  const [mappedHabits, setMappedHabits] = useState<IHabitsMapped>(
+    fillAll(mapifyHabits(props.data), today, 5, 5)
+  );
+
   const [tableHabits, setTableHabits] = useState<ITableProps>();
+
+  useEffect(() => {
+    console.log("mappedHabits changed");
+  }, [mappedHabits]);
+
+  const loadData = useCallback(() => {
+    setMappedHabits(fillAll(mapifyHabits(props.data), today, 5, 5));
+    updateTableHabits();
+  }, [setMappedHabits, props.data]);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const updateMappedHabits = useCallback(
+    (category: string, habit: string, date: number, newValue: number) => {
+      console.log("updating mappedHabits");
+      setMappedHabits((old) => {
+        const newHabits = old;
+        const c: ICategoryMapped = newHabits.categories.get(category)!;
+        const h: IHabitMapped = c.habits.get(habit)!;
+        const nh = h.activities.set(date, newValue);
+        console.log("the new habits", newHabits);
+        setTableHabits(mapHabitsToTableProps(newHabits));
+        props.updateHabits(unmapifyHabits(newHabits));
+        return old;
+      });
+    },
+    [setMappedHabits]
+  );
 
   const mapHabitsToTableProps = useCallback(
     (habitsMapped: IHabitsMapped): ITableProps => {
@@ -57,6 +93,12 @@ export default function Habits(props: IHabitsProps) {
                   console.log(
                     `I been pressed (${categoryName}, ${habitName}, ${date})`
                   );
+                  updateMappedHabits(
+                    categoryName,
+                    habitName,
+                    date,
+                    (activity + 1) % 3
+                  );
                   // Implement your desired onClick behavior here
                 },
               });
@@ -79,15 +121,13 @@ export default function Habits(props: IHabitsProps) {
         categories: categories,
       };
     },
-    [lockFuture, lockPast]
+    [lockFuture, lockPast, updateMappedHabits]
   );
 
-  useEffect(() => {
-    const mapp = mapifyHabits(props.data);
-    const filled = fillAll(mapp, today, 5, 5);
-    const propped = mapHabitsToTableProps(filled);
-    setTableHabits(propped);
-  }, [setTableHabits, mapHabitsToTableProps, props.data]);
+  const updateTableHabits = useCallback(() => {
+    console.log("recalculating tableHabits");
+    setTableHabits(mapHabitsToTableProps(mappedHabits));
+  }, [mapHabitsToTableProps, mappedHabits]);
 
   const toggleLockPast = useCallback(() => {
     setLockPast((prev) => !prev);
@@ -106,49 +146,17 @@ export default function Habits(props: IHabitsProps) {
       <button onClick={toggleLockFuture}>
         {lockFuture ? "🔒" : "🔓"} Future
       </button>
+      <button
+        onClick={() => {
+          console.log("sending this through as cookie", mappedHabits);
+        }}
+      >
+        trigger update cookie
+      </button>
       {/* <Row title={"Code"} values={[...allValues.values()]} onUpdateCheckbox={updateAValue} currentDay={today} lockPast={lockPast} lockFuture={lockFuture}/> */}
       {tableHabits && <Table {...tableHabits} />}
     </>
   );
-}
-
-function fillAll(
-  habits: IHabitsMapped,
-  today: number,
-  backwards: number,
-  forwards: number
-): IHabitsMapped {
-  // Iterate over each category in the habits map
-  for (const [categoryName, category] of habits.categories) {
-    // Iterate over each habit in the category
-    for (const [habitName, habit] of category.habits) {
-      // Fill blanks for the current habit
-      const newHabit = fillBlanks(habit, today, backwards, forwards);
-      // Update the habit in the category map
-      category.habits.set(habitName, newHabit);
-    }
-    // Update the category in the habits map
-    habits.categories.set(categoryName, category);
-  }
-
-  return habits;
-}
-
-// fill blanks puts 0 values in the map between certain dates, if no record exists
-export function fillBlanks(
-  row: IHabitMapped,
-  today: number,
-  backwards: number,
-  forwards: number
-): IHabitMapped {
-  const start = today - backwards * daySeconds;
-  const end = today + forwards * daySeconds;
-  for (let d = start; d <= end; d += daySeconds) {
-    if (row.activities.get(d) == undefined) {
-      row.activities.set(d, 0);
-    }
-  }
-  return row;
 }
 
 // function backToHabits(table: ITableProps): IHabits {

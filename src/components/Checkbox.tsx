@@ -73,6 +73,7 @@ export function Checkbox(props: ICheckboxProps) {
   }, [props.value]);
 
   const onLocalClick = useCallback(() => {
+    console.log("localClick");
     if (!props.locked) {
       props.onClick();
     }

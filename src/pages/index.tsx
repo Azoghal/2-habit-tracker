@@ -1,4 +1,5 @@
 import Habits, { getTodayMidday } from "@/components/Habits";
+import { Convert, IHabits } from "@/types/habits";
 import { useCallback, useEffect } from "react";
 import { useCookies, CookiesProvider } from "react-cookie";
 
@@ -26,6 +27,16 @@ export default function Index() {
     );
   }, [setCookie]);
 
+  const setNewCookie = useCallback(
+    (newHabits: IHabits) => {
+      console.log("setting the new cookie", newHabits);
+      const jsonData = Convert.habitsToJson(newHabits);
+      console.log("convertdData", jsonData);
+      setCookie("habitsCookie", jsonData, { path: "/" });
+    },
+    [setCookie]
+  );
+
   useEffect(() => {
     if (!cookies.habitsCookie) {
       setDefaultCookie();
@@ -37,9 +48,10 @@ export default function Index() {
     <CookiesProvider>
       {cookies.habitsCookie ? (
         <Habits
-          data={cookies.habitsCookie}
-          updateHabits={() => {
-            console.log("doing nothing");
+          data={cookies.habitsCookie} // TODO this should be an IHabits instaed
+          updateHabits={(newHabits) => {
+            console.log("received new habis");
+            setNewCookie(newHabits);
           }}
         />
       ) : (

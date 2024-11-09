@@ -1,3 +1,4 @@
+import { DAY_SECONDS } from "@/components/Habits";
 import { IActivity, ICategory, IHabit, IHabits } from "./habits";
 
 export interface IHabitsMapped {
@@ -62,14 +63,55 @@ export function unmapifyHabits(inHabits: IHabitsMapped): IHabits {
       categoryObj.habits.push(habitObj);
 
       habit.activities.forEach((activity, date) => {
-        const activityObj: IActivity = {
-          date: Number(date),
-          value: activity,
-        };
-        habitObj.activities.push(activityObj);
+        if (activity != undefined && date != undefined) {
+          const activityObj: IActivity = {
+            date: Number(date),
+            value: activity,
+          };
+          habitObj.activities.push(activityObj);
+        }
       });
     });
   });
 
   return habits;
+}
+
+export function fillAll(
+  habits: IHabitsMapped,
+  today: number,
+  backwards: number,
+  forwards: number
+): IHabitsMapped {
+  // Iterate over each category in the habits map
+  for (const [categoryName, category] of habits.categories) {
+    // Iterate over each habit in the category
+    for (const [habitName, habit] of category.habits) {
+      // Fill blanks for the current habit
+      const newHabit = fillBlanks(habit, today, backwards, forwards);
+      // Update the habit in the category map
+      category.habits.set(habitName, newHabit);
+    }
+    // Update the category in the habits map
+    habits.categories.set(categoryName, category);
+  }
+
+  return habits;
+}
+
+// fill blanks puts 0 values in the map between certain dates, if no record exists
+export function fillBlanks(
+  row: IHabitMapped,
+  today: number,
+  backwards: number,
+  forwards: number
+): IHabitMapped {
+  const start = today - backwards * DAY_SECONDS;
+  const end = today + forwards * DAY_SECONDS;
+  for (let d = start; d <= end; d += DAY_SECONDS) {
+    if (row.activities.get(d) == undefined) {
+      row.activities.set(d, 0);
+    }
+  }
+  return row;
 }
