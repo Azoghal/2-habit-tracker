@@ -9,6 +9,7 @@ import {
   IHabitMapped,
   IHabitsMapped,
   mapifyHabits,
+  unmapifyHabits,
 } from "@/types/habitsMaps";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -38,17 +39,17 @@ export default function Habits(props: IHabitsProps) {
     fillAll(mapifyHabits(props.data), today, 5, 5)
   );
 
-  useEffect(() => {
-    setMappedHabits(fillAll(mapifyHabits(props.data), today, 5, 5));
-  }, [setMappedHabits, props.data]);
-
-  // const loadData = useCallback(() => {
+  // useEffect(() => {
   //   setMappedHabits(fillAll(mapifyHabits(props.data), today, 5, 5));
   // }, [setMappedHabits, props.data]);
 
-  // useEffect(() => {
-  //   loadData();
-  // }, []);
+  const loadData = useCallback(() => {
+    setMappedHabits(fillAll(mapifyHabits(props.data), today, 5, 5));
+  }, [setMappedHabits, props.data]);
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const updateMappedHabits = useCallback(
     (category: string, habit: string, date: number, newValue: number) => {
@@ -59,6 +60,7 @@ export default function Habits(props: IHabitsProps) {
         const h: IHabitMapped = c.habits.get(habit)!;
         const nh = h.activities.set(date, newValue);
         console.log("the new habits", newHabits);
+        props.updateHabits(unmapifyHabits(newHabits));
         return old;
       });
     },
@@ -114,7 +116,8 @@ export default function Habits(props: IHabitsProps) {
       title: "My Habits", // Replace with your desired title
       categories: categories,
     };
-  }, [mappedHabits, lockFuture, lockPast]);
+  }, [mappedHabits, lockFuture, lockPast, props.data]);
+  // TODO slightly hacky to depend on props.data but is necesary as updated map is not triggering rerender
 
   const toggleLockPast = useCallback(() => {
     setLockPast((prev) => !prev);
