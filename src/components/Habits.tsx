@@ -4,6 +4,7 @@ import { IRowProps } from "@/components/Row";
 import Table, { ITableProps } from "@/components/Table";
 import { Convert, IActivity, ICategory, IHabit, IHabits } from "@/types/habits";
 import {
+  IHabitMapped,
   IHabitsMapped,
   mapifyHabits,
   unmapifyHabits,
@@ -25,10 +26,6 @@ const daySeconds = 86400;
 
 export default function Habits(props: IHabitsProps) {
   const today = getTodayMidday();
-  const yesterday = today - daySeconds; // TODO remove eventually, just for hardcoding
-  const tomorrow = today + daySeconds;
-
-  // TODO for now, use the range yesterday -> tomorrow as the range to fill in, if there is nothing present.
 
   // TODO rationalise the whole thing
   // 1. Populate the object to have all the relevant dates
@@ -150,69 +147,47 @@ export default function Habits(props: IHabitsProps) {
   );
 }
 
-// yuck
-// start and end are date numbers
-// TODO add a type alias for date numbers
-function fillBlanks(
-  row: IRowProps,
+// fill blanks puts 0 values in the map between certain dates, if no record exists
+export function fillBlanks(
+  row: IHabitMapped,
   today: number,
   backwards: number,
   forwards: number
-): IRowProps {
-  const createEmpty: (date: number) => ICheckboxProps = (date: number) => {
-    return {
-      date: date,
-      value: 0,
-      state: CheckboxStateFromInt(0),
-      locked: date != today, // TODO
-      onClick: () => {},
-    };
-  };
-
+): IHabitMapped {
   // build the list of activities we need, by creating empty ones when it does not already exist, copying where it does.
-
-  const newActivities: ICheckboxProps[] = [];
 
   const start = today - backwards * daySeconds;
   const end = today + forwards * daySeconds;
-
   for (let d = start; d <= end; d += daySeconds) {
-    const existing = row.activities.find((c: ICheckboxProps) => {
-      return c.date == d;
-    });
-    if (existing) {
-      newActivities.push(existing);
-    } else {
-      newActivities.push(createEmpty(d));
+    if (row.activities.get(d) == undefined) {
+      row.activities.set(d, 0);
+      // TODO need row =?
     }
   }
 
-  return {
-    ...row,
-    activities: newActivities,
-  };
+  return row;
 }
 
-function backToHabits(table: ITableProps): IHabits {
-  const categories: ICategory[] = table.categories.map((c) => {
-    const habits: IHabit[] = c.habits.map((h) => {
-      const activities: IActivity[] = h.activities.map((a) => {
-        const activity: IActivity = {
-          date: a.date,
-          value: a.value,
-        };
-        return activity;
-      });
-      const row: IHabit = { title: h.title, activities: activities };
-      return row;
-    });
-    const category: ICategory = { title: c.title, habits: habits };
-    return category;
-  });
+// function backToHabits(table: ITableProps): IHabits {
+//   const categories: ICategory[] = table.categories.map((c) => {
+//     const habits: IHabit[] = c.habits.map((h) => {
+//       const activities: IActivity[] = h.activities.map((a) => {
+//         const activity: IActivity = {
+//           date: a.date,
+//           value: a.value,
+//         };
+//         return activity;
+//       });
+//       const row: IHabit = { title: h.title, activities: activities };
+//       return row;
+//     });
+//     const category: ICategory = { title: c.title, habits: habits };
+//     return category;
+//   });
 
-  const res: IHabits = {
-    title: table.title,
-    categories: categories,
-  };
-  return res;
-}
+//   const res: IHabits = {
+//     title: table.title,
+//     categories: categories,
+//   };
+//   return res;
+// }
