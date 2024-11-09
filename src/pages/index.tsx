@@ -9,6 +9,7 @@ export default function Index() {
   // TODO base64 this before we cookify it
 
   const setDefaultCookie = useCallback(() => {
+    console.log("setting default cookie");
     setCookie(
       "habitsCookie",
       `{ "title":"Habits of Sam", 
