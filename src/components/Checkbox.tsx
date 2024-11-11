@@ -98,3 +98,6 @@ export function Checkbox(props: ICheckboxProps) {
     </div>
   );
 }
+
+// For styling https://blog.logrocket.com/styling-checkboxes-css-properties/
+// and refer to when we had it working with the angled fill
