@@ -2,7 +2,7 @@ import { ICategoryProps } from "@/components/Category";
 import { CheckboxStateFromInt, ICheckboxProps } from "@/components/Checkbox";
 import { IRowProps } from "@/components/Row";
 import Table, { ITableProps } from "@/components/Table";
-import { filterZeroActivities, IHabits } from "@/types/habits";
+import { filterZeroActivities, ICategory, IHabits } from "@/types/habits";
 import {
   fillAll,
   ICategoryMapped,
@@ -65,6 +65,21 @@ export default function Habits(props: IHabitsProps) {
       });
     },
     [setMappedHabits, lockPast, lockFuture]
+  );
+
+  const addCategory = useCallback(
+    (categoryName: string) => {
+      console.log("adding new category", categoryName);
+      const updated = { ...props.data };
+      const newCategory: ICategory = {
+        title: categoryName,
+        habits: [],
+      };
+      updated.categories.push(newCategory);
+      props.updateHabits(updated);
+      loadData();
+    },
+    [props.data, props.updateHabits, loadData]
   );
 
   // consolidate this and the effect below into a useMemo
@@ -135,6 +150,13 @@ export default function Habits(props: IHabitsProps) {
       </button>
       <button onClick={toggleLockFuture}>
         {lockFuture ? "🔒" : "🔓"} Future
+      </button>
+      <button
+        onClick={() => {
+          addCategory("Coding" + Math.random());
+        }}
+      >
+        add new category
       </button>
       {/* <Row title={"Code"} values={[...allValues.values()]} onUpdateCheckbox={updateAValue} currentDay={today} lockPast={lockPast} lockFuture={lockFuture}/> */}
       {tableHabits && <Table {...tableHabits} />}
