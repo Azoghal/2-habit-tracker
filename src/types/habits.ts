@@ -27,6 +27,20 @@ export interface IActivity {
   value: number;
 }
 
+export function filterZeroActivities(habits: IHabits): IHabits {
+  const filteredHabits = { ...habits }; // Create a shallow copy to avoid mutating the original object
+
+  filteredHabits.categories = filteredHabits.categories.map((category) => ({
+    ...category,
+    habits: category.habits.map((habit) => ({
+      ...habit,
+      activities: habit.activities.filter((activity) => activity.value !== 0),
+    })),
+  }));
+
+  return filteredHabits;
+}
+
 // Converts JSON strings to/from your types
 // and asserts the results of JSON.parse at runtime
 export class Convert {
