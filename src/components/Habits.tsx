@@ -2,7 +2,7 @@ import { ICategoryProps } from "@/components/Category";
 import { CheckboxStateFromInt, ICheckboxProps } from "@/components/Checkbox";
 import { IRowProps } from "@/components/Row";
 import Table, { ITableProps } from "@/components/Table";
-import { IHabits } from "@/types/habits";
+import { filterZeroActivities, IHabits } from "@/types/habits";
 import {
   fillAll,
   ICategoryMapped,
@@ -60,7 +60,7 @@ export default function Habits(props: IHabitsProps) {
         const h: IHabitMapped = c.habits.get(habit)!;
         const nh = h.activities.set(date, newValue);
         console.log("the new habits", newHabits);
-        props.updateHabits(unmapifyHabits(newHabits));
+        props.updateHabits(filterZeroActivities(unmapifyHabits(newHabits)));
         return old;
       });
     },
