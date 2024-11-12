@@ -24,7 +24,7 @@ export default function Index() {
           ]
         }
       ]}`,
-      { path: "/" }
+      { path: "/", expires: new Date(Date.now() + 365 * 10 * 1000) }
     );
   }, [setCookie]);
 
@@ -33,7 +33,10 @@ export default function Index() {
       console.log("setting the new cookie", newHabits);
       const jsonData = Convert.habitsToJson(newHabits);
       console.log("convertdData", jsonData);
-      setCookie("habitsCookie", jsonData, { path: "/" });
+      setCookie("habitsCookie", jsonData, {
+        path: "/",
+        expires: new Date(Date.now() + 365 * 10 * 1000),
+      });
     },
     [setCookie]
   );
