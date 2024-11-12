@@ -1,0 +1,22 @@
+// .category{
+//     grid-column: span 2;
+//     display: grid;
+//     grid-template-columns: 1fr repeat(15, 1fr); // hmm
+//     gap: 0.5rem;
+// }
+
+.category-title{
+    width: 150px;
+    display: inline-block; // todo will probs need to remove for grid stuff
+}
+
+.new-habit{
+    width: 150px;
+    display:flex;
+}
+
+.new-habit-input {
+    flex:1;
+    min-width: 80px;
+    max-width: 110px;
+}

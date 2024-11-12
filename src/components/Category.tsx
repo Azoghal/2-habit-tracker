@@ -20,19 +20,22 @@ export default function Category(props: ICategoryProps) {
   return (
     <>
       <div className="category">
-        <span>{props.title}</span>
+        <span className="category-title">{props.title}</span>
         {Array.from(props.habits.entries()).map(([title, habit]) => {
           return <Row {...habit} key={title} />;
         })}
         <div className="new-habit">
           <span>---- </span>
+          <button className="c-btn" onClick={handleNewHabitSubmit}>
+            +
+          </button>
           <input
+            className="new-habit-input input "
             type="text"
             placeholder="New Habit"
             value={newHabitTitle}
             onChange={(e) => setNewHabitTitle(e.target.value)}
           />
-          <button onClick={handleNewHabitSubmit}>Add</button>
         </div>
       </div>
     </>

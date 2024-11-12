@@ -1,4 +1,5 @@
 // a row of checkboxes
+import { useMemo } from "react";
 import { Checkbox, ICheckboxProps } from "./Checkbox";
 
 export interface IRowProps {
@@ -7,14 +8,21 @@ export interface IRowProps {
 }
 
 export default function Row(props: IRowProps) {
+  const sortedActivities = useMemo<Array<JSX.Element>>(() => {
+    const entries = Array.from(props.activities.entries());
+    const sorted = entries.sort(([dateA, _propsA], [dateB, _propsB]) => {
+      return dateA - dateB;
+    });
+    return entries.map(([date, activity]) => {
+      return <Checkbox {...activity} key={date} />;
+    });
+  }, [props.activities]);
+
   return (
     <>
       <div className="row">
-        <span>---- {props.title}</span>
-        {Array.from(props.activities.entries()).map(([date, activity]) => {
-          // TODO lift the locked, onClick, conversion to state into the props
-          return <Checkbox {...activity} key={date} />;
-        })}
+        <span className="row-title">---- {props.title}</span>
+        {sortedActivities}
       </div>
     </>
   );

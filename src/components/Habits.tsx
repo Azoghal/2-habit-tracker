@@ -1,13 +1,8 @@
 import { ICategoryProps } from "@/components/Category";
 import { CheckboxStateFromInt, ICheckboxProps } from "@/components/Checkbox";
 import { IRowProps } from "@/components/Row";
-import Table, { ITableProps } from "@/components/Table";
-import {
-  filterZeroActivities,
-  ICategory,
-  IHabit,
-  IHabits,
-} from "@/types/habits";
+import Table from "@/components/Table";
+import { filterZeroActivities, IHabits } from "@/types/habits";
 import {
   fillAll,
   ICategoryMapped,
@@ -37,8 +32,8 @@ export const DAY_SECONDS = 86400;
 
 export default function Habits(props: IHabitsProps) {
   const today = getTodayMidday();
-  const [lockPast, setLockPast] = useState(true);
-  const [lockFuture, setLockFuture] = useState(true);
+  const [lockPast, setLockPast] = useState(false);
+  const [lockFuture, setLockFuture] = useState(false);
 
   const [mappedHabits, setMappedHabits] = useState<IHabitsMapped>(
     fillAll(mapifyHabits(props.data), today, 5, 5)
@@ -181,13 +176,6 @@ export default function Habits(props: IHabitsProps) {
       </button>
       <button onClick={toggleLockFuture}>
         {lockFuture ? "🔒" : "🔓"} Future
-      </button>
-      <button
-        onClick={() => {
-          addCategory("Coding" + Math.random());
-        }}
-      >
-        add new category
       </button>
       {/* <Row title={"Code"} values={[...allValues.values()]} onUpdateCheckbox={updateAValue} currentDay={today} lockPast={lockPast} lockFuture={lockFuture}/> */}
       {tableHabits && <Table {...tableHabits} addCategory={addCategory} />}

@@ -24,13 +24,16 @@ export default function Table(props: ITableProps) {
         return <Category {...category} key={title} />;
       })}
       <div className="new-category">
+        <button className="c-btn" onClick={handleNewCategorySubmit}>
+          +
+        </button>
         <input
+          className="input new-category-input"
           type="text"
           placeholder="New Category"
           value={newCategoryTitle}
           onChange={(e) => setNewCategoryTitle(e.target.value)}
         />
-        <button onClick={handleNewCategorySubmit}>Add</button>
       </div>
     </div>
   );
