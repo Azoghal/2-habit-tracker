@@ -2,7 +2,12 @@ import { ICategoryProps } from "@/components/Category";
 import { CheckboxStateFromInt, ICheckboxProps } from "@/components/Checkbox";
 import { IRowProps } from "@/components/Row";
 import Table, { ITableProps } from "@/components/Table";
-import { filterZeroActivities, ICategory, IHabits } from "@/types/habits";
+import {
+  filterZeroActivities,
+  ICategory,
+  IHabit,
+  IHabits,
+} from "@/types/habits";
 import {
   fillAll,
   ICategoryMapped,
@@ -49,13 +54,14 @@ export default function Habits(props: IHabitsProps) {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [props.data]);
 
   const updateMappedHabits = useCallback(
     (category: string, habit: string, date: number, newValue: number) => {
       console.log("updating mappedHabits");
       setMappedHabits((old) => {
         const newHabits = { ...old };
+        // TODO undo !
         const c: ICategoryMapped = newHabits.categories.get(category)!;
         const h: IHabitMapped = c.habits.get(habit)!;
         const nh = h.activities.set(date, newValue);
@@ -70,13 +76,37 @@ export default function Habits(props: IHabitsProps) {
   const addCategory = useCallback(
     (categoryName: string) => {
       console.log("adding new category", categoryName);
-      const updated = { ...props.data };
-      const newCategory: ICategory = {
-        title: categoryName,
-        habits: [],
-      };
-      updated.categories.push(newCategory);
-      props.updateHabits(updated);
+      setMappedHabits((old) => {
+        const updated: IHabitsMapped = { ...old };
+        // TODO check that it doesn't already exist
+        const newCategory: ICategoryMapped = {
+          habits: new Map(),
+        };
+        updated.categories.set(categoryName, newCategory);
+        props.updateHabits(filterZeroActivities(unmapifyHabits(updated)));
+        return updated;
+      });
+      loadData();
+    },
+    [props.updateHabits, loadData, setMappedHabits]
+  );
+
+  // TODO I think addHabit and addCategory should operate on the mapped guys
+  const addHabit = useCallback(
+    (categoryName: string, habitName: string) => {
+      console.log("adding new habit", categoryName, habitName);
+      setMappedHabits((old) => {
+        const updated: IHabitsMapped = { ...old };
+        const category = updated.categories.get(categoryName)!;
+        if (!category.habits.get(habitName)) {
+          const newHabit: IHabitMapped = {
+            activities: new Map(),
+          };
+          category.habits.set(habitName, newHabit);
+        }
+        props.updateHabits(filterZeroActivities(unmapifyHabits(updated)));
+        return updated;
+      });
       loadData();
     },
     [props.data, props.updateHabits, loadData]
@@ -124,6 +154,7 @@ export default function Habits(props: IHabitsProps) {
       categories.set(categoryName, {
         title: categoryName,
         habits: categoryHabits,
+        addHabit: addHabit,
       });
     }
 
@@ -159,7 +190,7 @@ export default function Habits(props: IHabitsProps) {
         add new category
       </button>
       {/* <Row title={"Code"} values={[...allValues.values()]} onUpdateCheckbox={updateAValue} currentDay={today} lockPast={lockPast} lockFuture={lockFuture}/> */}
-      {tableHabits && <Table {...tableHabits} />}
+      {tableHabits && <Table {...tableHabits} addCategory={addCategory} />}
     </>
   );
 }
