@@ -8,6 +8,9 @@
 .category-title{
     width: 150px;
     display: inline-block; // todo will probs need to remove for grid stuff
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .new-habit{
