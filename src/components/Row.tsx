@@ -9,6 +9,7 @@ export interface IRowProps {
 
 export default function Row(props: IRowProps) {
   const sortedActivities = useMemo<Array<JSX.Element>>(() => {
+    console.log("sorting the activities for", props.title);
     const entries = Array.from(props.activities.entries());
     const sorted = entries.sort(([dateA, _propsA], [dateB, _propsB]) => {
       return dateA - dateB;

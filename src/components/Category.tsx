@@ -12,7 +12,7 @@ export default function Category(props: ICategoryProps) {
   const [newHabitTitle, setNewHabitTitle] = useState<string>("");
 
   const handleNewHabitSubmit = () => {
-    console.log("adding new habit, ", newHabitTitle);
+    console.log("submitting new row from Category.tsx", newHabitTitle);
     props.addHabit(props.title, newHabitTitle);
     setNewHabitTitle(""); // Clear the input field
   };

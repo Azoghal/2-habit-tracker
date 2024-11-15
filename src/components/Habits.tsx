@@ -53,14 +53,13 @@ export default function Habits(props: IHabitsProps) {
 
   const updateMappedHabits = useCallback(
     (category: string, habit: string, date: number, newValue: number) => {
-      console.log("updating mappedHabits");
+      console.log("called updateMappedHabitsCallback");
       setMappedHabits((old) => {
         const newHabits = { ...old };
         // TODO undo !
         const c: ICategoryMapped = newHabits.categories.get(category)!;
         const h: IHabitMapped = c.habits.get(habit)!;
         const nh = h.activities.set(date, newValue);
-        console.log("the new habits", newHabits);
         props.updateHabits(filterZeroActivities(unmapifyHabits(newHabits)));
         return old;
       });
@@ -127,7 +126,7 @@ export default function Habits(props: IHabitsProps) {
                 (date < today && lockPast) || (date > today && lockFuture),
               onClick: () => {
                 console.log(
-                  `I been pressed (${categoryName}, ${habitName}, ${date}, ${activity}=>${(activity + 1) % 3})`
+                  `I have been pressed (${categoryName}, ${habitName}, ${date}, ${activity}=>${(activity + 1) % 3})`
                 );
                 updateMappedHabits(
                   categoryName,
@@ -157,7 +156,7 @@ export default function Habits(props: IHabitsProps) {
       title: "My Habits", // Replace with your desired title
       categories: categories,
     };
-  }, [mappedHabits, lockFuture, lockPast, props.data]);
+  }, [mappedHabits, lockFuture, lockPast, props.data, updateMappedHabits]);
   // TODO slightly hacky to depend on props.data but is necesary as updated map is not triggering rerender
 
   const toggleLockPast = useCallback(() => {
