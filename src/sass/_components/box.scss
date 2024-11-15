@@ -1,6 +1,9 @@
 @use "../_vars/variables" as *;
 @use "../_vars/colours" as *;
 
+.box-box-container {
+    border: 1px solid $checkbox-border-colour;
+}
 
 .box-box {
 
