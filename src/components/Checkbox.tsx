@@ -1,5 +1,6 @@
 import { IActivity } from "@/types/habits";
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { Box } from "./Box";
 
 export enum CheckboxState {
   Empty = 0,
@@ -82,7 +83,7 @@ export function Checkbox(props: ICheckboxProps) {
   return (
     <div className="checkbox-container" onClick={onLocalClick}>
       <label className="checkbox-inner">
-        <input
+        {/* <input
           type="checkbox"
           className="checkbox-inner"
           name={name}
@@ -92,7 +93,8 @@ export function Checkbox(props: ICheckboxProps) {
           onClick={() => {}}
           onChange={() => {}}
           ref={cRef}
-        />
+        /> */}
+        <Box state={props.value} />
         {/* <span></span>  */}
       </label>
     </div>

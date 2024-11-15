@@ -1,3 +1,4 @@
+import { Box } from "@/components/Box";
 import Habits, { YEAR_MILLIS } from "@/components/Habits";
 import { Convert, IHabits } from "@/types/habits";
 import { useEffect, useMemo } from "react";
