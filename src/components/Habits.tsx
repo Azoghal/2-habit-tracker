@@ -2,7 +2,7 @@ import { ICategoryProps } from "@/components/Category";
 import { CheckboxStateFromInt, ICheckboxProps } from "@/components/Checkbox";
 import { IRowProps } from "@/components/Row";
 import Table from "@/components/Table";
-import { filterZeroActivities, IHabits } from "@/types/habits";
+import { Convert, filterZeroActivities, IHabits } from "@/types/habits";
 import {
   fillAll,
   ICategoryMapped,
@@ -12,6 +12,7 @@ import {
   unmapifyHabits,
 } from "@/types/habitsMaps";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCookies } from "react-cookie";
 
 export function getTodayMidday() {
   const now = new Date();
@@ -21,22 +22,30 @@ export function getTodayMidday() {
 
 export interface IHabitsProps {
   data: IHabits; // TODO use maps in the types - it's the right data type. would be ideal if the parser generator could do us maps, have a go
-  updateHabits(newHabits: IHabits): void;
 }
 
 export const DAY_SECONDS = 86400;
-
-// TODO rationalise the whole thing
-// 1. Populate the object to have all the relevant dates
-// 2. Convert them to suitable for props with enrich
+export const YEAR_MILLIS = 365 * DAY_SECONDS * 1000;
 
 export default function Habits(props: IHabitsProps) {
+  const [cookie, setCookie] = useCookies(["habitsCookie"]);
+
   const today = getTodayMidday();
   const [lockPast, setLockPast] = useState(false);
   const [lockFuture, setLockFuture] = useState(false);
 
   const [mappedHabits, setMappedHabits] = useState<IHabitsMapped>(
     fillAll(mapifyHabits(props.data), today, 5, 5)
+  );
+
+  const updateHabitCookie = useCallback(
+    (newMappedHabits: IHabits) => {
+      setCookie("habitsCookie", Convert.habitsToJson(newMappedHabits), {
+        path: "/",
+        expires: new Date(Date.now() + YEAR_MILLIS),
+      });
+    },
+    [setCookie]
   );
 
   // useEffect(() => {
@@ -60,11 +69,11 @@ export default function Habits(props: IHabitsProps) {
         const c: ICategoryMapped = newHabits.categories.get(category)!;
         const h: IHabitMapped = c.habits.get(habit)!;
         const nh = h.activities.set(date, newValue);
-        props.updateHabits(filterZeroActivities(unmapifyHabits(newHabits)));
+        updateHabitCookie(filterZeroActivities(unmapifyHabits(newHabits)));
         return old;
       });
     },
-    [setMappedHabits, lockPast, lockFuture]
+    [setMappedHabits, lockPast, lockFuture, updateHabitCookie]
   );
 
   const addCategory = useCallback(
@@ -77,12 +86,12 @@ export default function Habits(props: IHabitsProps) {
           habits: new Map(),
         };
         updated.categories.set(categoryName, newCategory);
-        props.updateHabits(filterZeroActivities(unmapifyHabits(updated)));
+        updateHabitCookie(filterZeroActivities(unmapifyHabits(updated)));
         return updated;
       });
       loadData();
     },
-    [props.updateHabits, loadData, setMappedHabits]
+    [updateHabitCookie, loadData, setMappedHabits]
   );
 
   // TODO I think addHabit and addCategory should operate on the mapped guys
@@ -98,12 +107,12 @@ export default function Habits(props: IHabitsProps) {
           };
           category.habits.set(habitName, newHabit);
         }
-        props.updateHabits(filterZeroActivities(unmapifyHabits(updated)));
+        updateHabitCookie(filterZeroActivities(unmapifyHabits(updated)));
         return updated;
       });
       loadData();
     },
-    [props.data, props.updateHabits, loadData]
+    [props.data, updateHabitCookie, loadData]
   );
 
   // consolidate this and the effect below into a useMemo
