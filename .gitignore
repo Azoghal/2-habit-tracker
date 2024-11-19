@@ -2,3 +2,4 @@ node_modules/
 .husky/
 .turbo/
 dist/
+.env
