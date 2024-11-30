@@ -1,3 +1,3 @@
-# React + TypeScript + Vite + Firebase + SCSS
+# 2 - Habit Tracker
 
-This template provides a decent starting point for any quick React project that needs a database and user authentication.
+Second one weekend website. At some point last year, I was trying to establish some habits and I had a piece of squared paper that I tracked the habits in. It was quite satisfying and also easy to see at glance which things were going well and which things weren't. I never got around to sorting it out on a new piece of paper when I ran out of room though, so the idea here is to recreate this in a simple webpage.

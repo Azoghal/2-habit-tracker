@@ -1,11 +1,16 @@
 $darkest-grey: #202020;
-$dark-grey: #252525;
+$dark-grey: #383838;
 $grey: #434343;
 $light-grey: #545454;
 $lightest-grey: #565656;
 $white: #ffffff;
-$offwhite: #cccccc;
 $black: #000000;
+$green: #004e07;
+$light-green: #006909;
 
-$body-bg: $dark-grey;
-$body-colour: $offwhite;
+$checkbox-fill: $darkest-grey;
+$checkbox-border-colour: $dark-grey;
+
+$body-bg: $lightest-grey;
+$body-colour: $white;
+$anchor-colour: $green;

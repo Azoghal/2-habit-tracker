@@ -31,7 +31,7 @@ function Signup(): JSX.Element {
 
     return (
         <>
-            <h1> Firebase Demo </h1>
+            <h1> Checkbox Demo </h1>
             {errorMsg && <p>{errorMsg}</p>}
             <input
                 type="text"
