@@ -1,6 +1,0 @@
-node_modules/
-.husky/
-.turbo/
-dist/
-.env
-src/firebase.ts
