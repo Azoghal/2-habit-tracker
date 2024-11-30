@@ -4,20 +4,18 @@ import { useEffect, useMemo, useState } from "react";
 import { useCookies, CookiesProvider } from "react-cookie";
 
 import { StyledFirebaseAuth } from "react-firebaseui";
-import { firebaseApp, firebaseAuth } from "../firebase";
-
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+// Your web app's Firebase configuration
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 import { GoogleAuthProvider } from "firebase/auth";
+import { firebaseConfig } from "@/firebase";
 
-// Configure FirebaseUI.
-const uiConfig = {
-  // Popup signin flow rather than redirect flow.
-  signInFlow: "popup",
-  signInOptions: [GoogleAuthProvider.PROVIDER_ID],
-  callbacks: {
-    // Avoid redirects after sign-in.
-    signInSuccessWithAuthResult: () => false,
-  },
-};
+// Initialize Firebase
+const firebaseApp = initializeApp(firebaseConfig);
+const firebaseAuth = getAuth(firebaseApp);
 
 const defaultHabits: IHabits = {
   title: "Habits of Sam",
@@ -38,6 +36,19 @@ const defaultHabitJson = Convert.habitsToJson(defaultHabits);
 
 export default function Index() {
   const [isSignedIn, setIsSignedIn] = useState(false);
+
+  // Configure FirebaseUI.
+  const uiConfig = useMemo(() => {
+    return {
+      // Popup signin flow rather than redirect flow.
+      signInFlow: "popup",
+      signInOptions: [GoogleAuthProvider.PROVIDER_ID],
+      callbacks: {
+        // Avoid redirects after sign-in.
+        signInSuccessWithAuthResult: () => false,
+      },
+    };
+  }, []);
 
   // Listen to the Firebase Auth state and set the local state.
   useEffect(() => {
