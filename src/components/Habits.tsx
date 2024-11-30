@@ -192,6 +192,7 @@ export default function Habits(props: IHabitsProps) {
             <button onClick={toggleLockFuture}>
                 {lockFuture ? "🔒" : "🔓"} Future
             </button>
+            <button onClick={loadData}>Refresh</button>
             {/* <Row title={"Code"} values={[...allValues.values()]} onUpdateCheckbox={updateAValue} currentDay={today} lockPast={lockPast} lockFuture={lockFuture}/> */}
             {tableHabits && (
                 <Table

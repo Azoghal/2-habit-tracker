@@ -21,26 +21,17 @@ function Landing(): JSX.Element {
     const loadData = useCallback(() => {
         // TODO change this to use the user id to get the doc
         getDocs(habitsCollection).then((rs) => {
-            const doc = rs.docs[0];
+            const doc = rs.docs.filter((d) => {
+                return d.id == "zypiG4obgvl3T1Ja2gS2";
+            })[0];
             const data = doc.data();
+            console.log("the fetched data", data);
             const hhhh: IHabits = {
                 title: doc.id,
-                categories: [
-                    {
-                        title: "Exercise",
-                        habits: [
-                            {
-                                title: "Running",
-                                activities: [
-                                    { date: getTodayMidday(), value: 1 },
-                                ],
-                            },
-                        ],
-                    },
-                ],
+                categories: data.categories,
             };
-            // console.log(data);
-            console.log(hhhh);
+            console.log("hhhh", hhhh);
+            console.log("setting value");
             setHabits(hhhh);
         });
     }, [habitsCollection, setHabits]);
