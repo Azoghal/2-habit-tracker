@@ -1,0 +1,22 @@
+@use "../_vars/_variables" as *;
+@use "../_vars/_fonts" as *;
+@use "../_vars/_colours" as *;
+
+body {
+    background-color: $body-bg;
+    color: $body-colour;
+    font-family: $font-sans;
+    font-size: $font-size;
+    font-variant-ligatures: no-contextual;
+    line-height: $line-height-base;
+    margin: 0;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+h1 {
+    font-size: $font-size-h1;
+    font-weight: $font-weight-bold;
+}
