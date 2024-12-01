@@ -1,5 +1,5 @@
 import { fillAll, IHabits } from "../types/habits";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Table, { ITableProps } from "./Table";
 
 export function getTodayMidday() {
@@ -20,20 +20,8 @@ export default function Habits(props: IHabitsProps) {
     const [lockPast, setLockPast] = useState(false);
     const [lockFuture, setLockFuture] = useState(false);
 
-    const [filledHabits, setFilledHabits] = useState<IHabits>(
-        fillAll(props.data, today, 5, 5),
-    );
-
-    const loadData = useCallback(() => {
-        setFilledHabits(fillAll(props.data, today, 5, 5));
-    }, [props.data, today]);
-
-    useEffect(() => {
-        loadData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.data]);
-
-    const tableHabits = useMemo(() => {
+    const filledHabitsMemo = useMemo(() => {
+        const filledHabits = fillAll(props.data, today, 5, 5);
         const tableProps: ITableProps = {
             title: filledHabits.title, // Replace with your desired title
             categories: filledHabits.categories,
@@ -53,7 +41,7 @@ export default function Habits(props: IHabitsProps) {
             },
         };
         return tableProps;
-    }, [filledHabits.categories, filledHabits.title]);
+    }, [props.data, today]);
 
     // TODO fix this so it does something again
     const toggleLockPast = useCallback(() => {
@@ -73,11 +61,10 @@ export default function Habits(props: IHabitsProps) {
             <button onClick={toggleLockFuture}>
                 {lockFuture ? "🔒" : "🔓"} Future
             </button>
-            <button onClick={loadData}>Refresh</button>
             {/* <Row title={"Code"} values={[...allValues.values()]} onUpdateCheckbox={updateAValue} currentDay={today} lockPast={lockPast} lockFuture={lockFuture}/> */}
-            {tableHabits && (
+            {filledHabitsMemo && (
                 <Table
-                    {...tableHabits}
+                    {...filledHabitsMemo}
                     addCategory={() => {
                         console.log("removed");
                     }}
