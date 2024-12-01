@@ -1,7 +1,6 @@
 @use "../_vars/colours" as *;
 
-
-.input{
+.input {
     background-color: $grey;
     color: $white;
     box-shadow: none;
@@ -10,10 +9,10 @@
     border-color: $light-grey;
 }
 
-.c-btn{
+.c-btn {
     background-color: $grey;
     border-radius: 5px;
     color: $white;
-    border:1px solid;
+    border: 1px solid;
     border-color: $light-grey;
 }

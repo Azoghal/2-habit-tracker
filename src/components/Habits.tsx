@@ -9,7 +9,7 @@ export function getTodayMidday() {
 }
 
 export interface IHabitsProps {
-    data: IHabits; // TODO use maps in the types - it's the right data type. would be ideal if the parser generator could do us maps, have a go
+    data: IHabits;
 }
 
 export const DAY_SECONDS = 86400;
@@ -23,7 +23,7 @@ export default function Habits(props: IHabitsProps) {
     const filledHabitsMemo = useMemo(() => {
         const filledHabits = fillAll(props.data, today, 5, 5);
         const tableProps: ITableProps = {
-            title: filledHabits.title, // Replace with your desired title
+            title: filledHabits.title,
             categories: filledHabits.categories,
             addCategory: (newCategory: string) => {
                 console.log("unimplimented", newCategory);
@@ -54,14 +54,12 @@ export default function Habits(props: IHabitsProps) {
 
     return (
         <>
-            {/* <Checkbox state={checkState} onClick={updateCheck}/> */}
             <button className="" onClick={toggleLockPast}>
                 {lockPast ? "🔒" : "🔓"} Past
             </button>
             <button onClick={toggleLockFuture}>
                 {lockFuture ? "🔒" : "🔓"} Future
             </button>
-            {/* <Row title={"Code"} values={[...allValues.values()]} onUpdateCheckbox={updateAValue} currentDay={today} lockPast={lockPast} lockFuture={lockFuture}/> */}
             {filledHabitsMemo && (
                 <Table
                     {...filledHabitsMemo}
