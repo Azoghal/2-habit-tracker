@@ -6,6 +6,8 @@ import { ICategory } from "../types/habits";
 export interface ITableProps {
     title: string;
     categories: ICategory[];
+    lockPast: boolean;
+    lockFuture: boolean;
     addCategory: (newCategory: string) => void;
     addHabit: (category: string, newHabit: string) => void;
     changeValue: (
@@ -33,6 +35,8 @@ export default function Table(props: ITableProps) {
                     <Category
                         title={category.title}
                         habits={category.habits}
+                        lockFuture={props.lockFuture}
+                        lockPast={props.lockPast}
                         addHabit={(habitName: string) => {
                             props.addHabit(category.title, habitName);
                         }}

@@ -25,6 +25,8 @@ export default function Habits(props: IHabitsProps) {
         const tableProps: ITableProps = {
             title: filledHabits.title,
             categories: filledHabits.categories,
+            lockFuture: lockFuture,
+            lockPast: lockPast,
             addCategory: (newCategory: string) => {
                 console.log("unimplimented", newCategory);
             },
@@ -41,7 +43,7 @@ export default function Habits(props: IHabitsProps) {
             },
         };
         return tableProps;
-    }, [props.data, today]);
+    }, [lockFuture, lockPast, props.data, today]);
 
     // TODO fix this so it does something again
     const toggleLockPast = useCallback(() => {

@@ -2,17 +2,30 @@ import { useMemo, useState } from "react";
 import Row, { IHabitProps } from "./Row";
 import { IHabit } from "../types/habits";
 import { CheckboxStateFromInt, ICheckboxProps } from "./Checkbox";
+import { getTodayMidday } from "./Habits";
 
 export interface ICategoryProps {
     title: string;
     habits: IHabit[];
+    lockFuture: boolean;
+    lockPast: boolean;
     addHabit: (newHabit: string) => void;
     changeValue: (habit: string, date: number, value: number) => void;
+}
+
+function shouldLock(
+    today: number,
+    date: number,
+    lockFuture: boolean,
+    lockPast: boolean,
+) {
+    return (date < today && lockPast) || (date > today && lockFuture);
 }
 
 // TODO add an input field and a button below the existing entries to allow adding a new habit
 export default function Category(props: ICategoryProps) {
     const [newHabitTitle, setNewHabitTitle] = useState<string>("");
+    const today = getTodayMidday();
 
     const handleNewHabitSubmit = () => {
         console.log("submitting new row from Category.tsx", newHabitTitle);
@@ -26,7 +39,12 @@ export default function Category(props: ICategoryProps) {
                 const checkbox: ICheckboxProps = {
                     ...a,
                     state: CheckboxStateFromInt(a.value),
-                    locked: false, // TODO
+                    locked: shouldLock(
+                        today,
+                        a.date,
+                        props.lockFuture,
+                        props.lockPast,
+                    ),
                     onClick: () => {
                         props.changeValue(h.title, a.date, (a.value + 1) % 3);
                     },
@@ -39,7 +57,7 @@ export default function Category(props: ICategoryProps) {
             };
             return proppedHabits;
         });
-    }, [props]);
+    }, [props, today]);
 
     return (
         <>
