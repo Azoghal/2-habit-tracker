@@ -2,29 +2,28 @@
 import { useMemo } from "react";
 import { Checkbox, ICheckboxProps } from "./Checkbox";
 
-export interface IRowProps {
-  title: string;
-  activities: Map<number, ICheckboxProps>;
+export interface IHabitProps {
+    title: string;
+    activities: ICheckboxProps[];
 }
 
-export default function Row(props: IRowProps) {
-  const sortedActivities = useMemo<Array<JSX.Element>>(() => {
-    console.log("sorting the activities for", props.title);
-    const entries = Array.from(props.activities.entries());
-    const sorted = entries.sort(([dateA, _propsA], [dateB, _propsB]) => {
-      return dateA - dateB;
-    });
-    return entries.map(([date, activity]) => {
-      return <Checkbox {...activity} key={date} />;
-    });
-  }, [props.activities]);
+export default function Row(props: IHabitProps) {
+    const sortedActivities = useMemo<Array<JSX.Element>>(() => {
+        console.log("sorting the activities for", props.title);
+        const sorted = props.activities.sort((activityA, activityB) => {
+            return activityA.date - activityB.date;
+        });
+        return sorted.map((activity) => {
+            return <Checkbox {...activity} key={activity.date} />;
+        });
+    }, [props.activities, props.title]);
 
-  return (
-    <>
-      <div className="row">
-        <span className="row-title">---- {props.title}</span>
-        {sortedActivities}
-      </div>
-    </>
-  );
+    return (
+        <>
+            <div className="row">
+                <span className="row-title">---- {props.title}</span>
+                {sortedActivities}
+            </div>
+        </>
+    );
 }

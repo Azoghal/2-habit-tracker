@@ -48,7 +48,7 @@ export function Checkbox(props: ICheckboxProps) {
         if (!props.locked) {
             props.onClick();
         }
-    }, [props.onClick, props.locked]);
+    }, [props]);
 
     return (
         <div className="checkbox-container" onClick={onLocalClick}>

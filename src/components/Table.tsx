@@ -1,11 +1,19 @@
 // a row of checkboxes
 import { useState } from "react";
-import Category, { ICategoryProps } from "./Category";
+import Category from "./Category";
+import { ICategory } from "../types/habits";
 
 export interface ITableProps {
     title: string;
-    categories: Map<string, ICategoryProps>;
+    categories: ICategory[];
     addCategory: (newCategory: string) => void;
+    addHabit: (category: string, newHabit: string) => void;
+    changeValue: (
+        category: string,
+        habit: string,
+        date: number,
+        value: number,
+    ) => void;
 }
 
 export default function Table(props: ITableProps) {
@@ -17,13 +25,32 @@ export default function Table(props: ITableProps) {
         setNewCategoryTitle(""); // Clear the input field
     };
 
-    console.log(props.categories.size);
-
     return (
         <div className="table">
             <span>{props.title}</span>
-            {Array.from(props.categories.entries()).map(([title, category]) => {
-                return <Category {...category} key={title} />;
+            {props.categories.map((category) => {
+                return (
+                    <Category
+                        title={category.title}
+                        habits={category.habits}
+                        addHabit={(habitName: string) => {
+                            props.addHabit(category.title, habitName);
+                        }}
+                        changeValue={(
+                            habit: string,
+                            date: number,
+                            value: number,
+                        ) => {
+                            props.changeValue(
+                                category.title,
+                                habit,
+                                date,
+                                value,
+                            );
+                        }}
+                        key={category.title}
+                    />
+                );
             })}
             <div className="new-category">
                 <button className="c-btn" onClick={handleNewCategorySubmit}>
