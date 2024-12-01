@@ -1,4 +1,4 @@
-import { fillAll, IHabits } from "../types/habits";
+import { fillAll, ICategory, IHabits } from "../types/habits";
 import { useCallback, useMemo, useState } from "react";
 import Table, { ITableProps } from "./Table";
 
@@ -10,6 +10,7 @@ export function getTodayMidday() {
 
 export interface IHabitsProps {
     data: IHabits;
+    updateHabits(newHabits: IHabits): void;
 }
 
 export const DAY_SECONDS = 86400;
@@ -61,6 +62,24 @@ export default function Habits(props: IHabitsProps) {
             </button>
             <button onClick={toggleLockFuture}>
                 {lockFuture ? "🔒" : "🔓"} Future
+            </button>
+            <button
+                onClick={() => {
+                    const msg =
+                        "I got updated programatically at " + Date.now();
+                    console.log(msg);
+                    const newCategory: ICategory = {
+                        title: "program category",
+                        habits: [],
+                    };
+                    props.updateHabits({
+                        ...props.data,
+                        categories: props.data.categories.concat(newCategory),
+                        title: msg,
+                    });
+                }}
+            >
+                Do an upate
             </button>
             {filledHabitsMemo && (
                 <Table

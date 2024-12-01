@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, getDocs } from "@firebase/firestore";
+import { doc, getDoc, updateDoc } from "@firebase/firestore";
 import { useUserAuth } from "../context/SessionHelpers";
 import Habits from "../components/Habits";
 import { IHabits } from "../types/habits";
@@ -10,29 +10,38 @@ const placeholderHabits: IHabits = {
     categories: [],
 };
 
+const debugDoc = "zypiG4obgvl3T1Ja2gS2";
+
 function Landing(): JSX.Element {
-    // const navigate = useNavigate();
     const user = useUserAuth();
 
-    // TODO fetch example
-    const habitsCollection = collection(db, "habits");
+    const habitsDocRef = doc(db, "habits", debugDoc);
     const [habits, setHabits] = useState<IHabits>(placeholderHabits);
 
     const loadData = useCallback(() => {
         // TODO change this to use the user id to get the doc
-        getDocs(habitsCollection).then((rs) => {
-            // TODO temporary measure to get the current doc
-            const doc = rs.docs.filter((d) => {
-                return d.id == "zypiG4obgvl3T1Ja2gS2";
-            })[0];
-            const data = doc.data();
-            const hhhh: IHabits = {
-                title: doc.id,
-                categories: data.categories,
-            };
-            setHabits(hhhh);
+        getDoc(habitsDocRef).then((doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                const hhhh: IHabits = {
+                    title: doc.id,
+                    categories: data.categories,
+                };
+                setHabits(hhhh);
+            } else {
+                console.log("failed to fetch doc");
+            }
         });
-    }, [habitsCollection, setHabits]);
+    }, [setHabits, habitsDocRef]);
+
+    const updateHabits = useCallback(
+        (newHabits: IHabits) => {
+            updateDoc(habitsDocRef, { ...newHabits }).then(() => {
+                loadData();
+            });
+        },
+        [habitsDocRef, loadData],
+    );
 
     useEffect(() => {
         loadData();
@@ -42,7 +51,7 @@ function Landing(): JSX.Element {
         <>
             <h1>Firebase Demo - Recipes</h1>
             <h2>{user?.email}</h2>
-            <Habits data={habits} />
+            <Habits data={habits} updateHabits={updateHabits} />
         </>
     );
 }
