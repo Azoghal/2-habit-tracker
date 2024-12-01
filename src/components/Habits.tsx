@@ -21,6 +21,24 @@ export default function Habits(props: IHabitsProps) {
     const [lockPast, setLockPast] = useState(false);
     const [lockFuture, setLockFuture] = useState(false);
 
+    const addCategory = useCallback((categoryName: string) => {
+        // TODO actually change them
+        props.updateHabits(props.data);
+    }, []);
+
+    const addHabit = useCallback((category: string, newHabit: string) => {
+        // TODO actually change them
+        props.updateHabits(props.data);
+    }, []);
+
+    const changeValue = useCallback(
+        (category: string, habit: string, date: number, newValue: number) => {
+            // TODO actually change them
+            props.updateHabits(props.data);
+        },
+        [],
+    );
+
     const filledHabitsMemo = useMemo(() => {
         const filledHabits = fillAll(props.data, today, 5, 5);
         const tableProps: ITableProps = {
