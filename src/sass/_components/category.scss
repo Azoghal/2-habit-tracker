@@ -5,7 +5,7 @@
 //     gap: 0.5rem;
 // }
 
-.category-title{
+.category-title {
     width: 150px;
     display: inline-block; // todo will probs need to remove for grid stuff
     white-space: nowrap;
@@ -13,13 +13,13 @@
     text-overflow: ellipsis;
 }
 
-.new-habit{
+.new-habit {
     width: 150px;
-    display:flex;
+    display: flex;
 }
 
 .new-habit-input {
-    flex:1;
+    flex: 1;
     min-width: 80px;
     max-width: 110px;
 }
