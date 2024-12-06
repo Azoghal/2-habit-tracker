@@ -21,32 +21,38 @@ export default function Habits(props: IHabitsProps) {
     const [lockPast, setLockPast] = useState(false);
     const [lockFuture, setLockFuture] = useState(false);
 
-    // const [habits, setHabits] = useState<IHabits>();
+    // Represents a "staged" view of the habits.
+    // as long as we call setHabits only via the updateHabits callback,
+    // behaviour should be good.
+    const [habits, setHabits] = useState<IHabits>(props.data);
+    console.log("my props data is ", props.data);
+    console.log("my habits is ", habits);
 
-    // const updateHabits = useCallback((newHabits: IHabits) => {
-    //      setHabits(newHabits)
-    //      props.updateHabits(newHabits)
-    // }, [])
+    const updateHabits = useCallback(
+        (newHabits: IHabits) => {
+            setHabits(newHabits);
+            props.updateHabits(newHabits);
+        },
+        [setHabits, props.updateHabits],
+    );
 
     const addCategory = useCallback(
         (categoryName: string) => {
-            // TODO set the staged state
             const newCategory: ICategory = {
                 title: categoryName,
                 habits: [],
             };
-            props.updateHabits({
-                ...props.data,
-                categories: props.data.categories.concat(newCategory),
+            updateHabits({
+                ...habits,
+                categories: habits.categories.concat(newCategory),
             });
         },
-        [props],
+        [props, habits, updateHabits],
     );
 
     const addHabit = useCallback(
         (category: string, newHabit: string) => {
-            // TODO set the staged state
-            const newCategories = props.data.categories.map((c: ICategory) => {
+            const newCategories = habits.categories.map((c: ICategory) => {
                 if (c.title == category) {
                     const habit: IHabit = {
                         title: newHabit,
@@ -56,15 +62,14 @@ export default function Habits(props: IHabitsProps) {
                 }
                 return c;
             });
-            props.updateHabits({ ...props.data, categories: newCategories });
+            updateHabits({ ...habits, categories: newCategories });
         },
-        [props],
+        [habits, updateHabits],
     );
 
     const changeValue = useCallback(
         (category: string, habit: string, date: number, newValue: number) => {
-            // TODO actually change them
-            const newCategories = props.data.categories.map((c: ICategory) => {
+            const newCategories = habits.categories.map((c: ICategory) => {
                 if (c.title == category) {
                     const newHabits = c.habits.map((h: IHabit) => {
                         if (h.title == habit) {
@@ -82,13 +87,13 @@ export default function Habits(props: IHabitsProps) {
                 }
                 return c;
             });
-            props.updateHabits({ ...props.data, categories: newCategories });
+            updateHabits({ ...habits, categories: newCategories });
         },
-        [props],
+        [habits, setHabits],
     );
 
     const filledHabitsMemo = useMemo(() => {
-        const filledHabits = fillAll(props.data, today, 5, 5);
+        const filledHabits = fillAll(habits, today, 5, 5);
         const tableProps: ITableProps = {
             title: filledHabits.title,
             categories: filledHabits.categories,
@@ -105,7 +110,7 @@ export default function Habits(props: IHabitsProps) {
         changeValue,
         lockFuture,
         lockPast,
-        props.data,
+        habits,
         today,
     ]);
 
