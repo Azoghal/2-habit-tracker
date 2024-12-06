@@ -31,26 +31,34 @@ function Landing(): JSX.Element {
             return;
         }
         getDoc(doc(userCollection, user?.uid)).then((userDoc) => {
-            if (userDoc.exists() && userDoc.data().habitsId) {
-                console.log("user habits id", userDoc.data().habitsId);
-                setUserHabitId(userDoc.data().habitsId);
-                getDoc(doc(habitsCollection, userDoc.data().habitsId)).then(
-                    (habitsDoc) => {
-                        if (habitsDoc.exists()) {
-                            const data = habitsDoc.data();
-                            const hhhh: IHabits = {
-                                title: habitsDoc.id,
-                                categories: data.categories,
-                            };
-                            setHabits(hhhh);
-                        } else {
-                            // TODO in this case the user doc exists, and has a habitsId
-                            console.log("failed to fetch expected habits doc");
-                        }
-                    },
-                );
+            if (userDoc.exists()) {
+                if (userDoc.data().habitsId) {
+                    console.log("user habits id", userDoc.data().habitsId);
+                    setUserHabitId(userDoc.data().habitsId);
+                    getDoc(doc(habitsCollection, userDoc.data().habitsId)).then(
+                        (habitsDoc) => {
+                            if (habitsDoc.exists()) {
+                                const data = habitsDoc.data();
+                                const hhhh: IHabits = {
+                                    title: habitsDoc.id,
+                                    categories: data.categories,
+                                };
+                                setHabits(hhhh);
+                            } else {
+                                // TODO in this case the user doc exists, and has a habitsId
+                                console.log(
+                                    "failed to fetch expected habits doc",
+                                );
+                            }
+                        },
+                    );
+                } else {
+                    console.log("no habitsId");
+                    console.log(userDoc.data());
+                }
             } else {
                 console.log("failed to fetch user details");
+                console.log(userDoc);
             }
         });
         // TODO change this to use the user id to get the doc
