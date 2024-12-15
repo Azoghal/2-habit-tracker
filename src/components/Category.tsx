@@ -28,7 +28,6 @@ export default function Category(props: ICategoryProps) {
     const today = getTodayMidday();
 
     const handleNewHabitSubmit = () => {
-        console.log("submitting new row from Category.tsx", newHabitTitle);
         props.addHabit(newHabitTitle);
         setNewHabitTitle(""); // Clear the input field
     };

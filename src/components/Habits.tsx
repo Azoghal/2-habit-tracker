@@ -25,8 +25,6 @@ export default function Habits(props: IHabitsProps) {
     // as long as we call setHabits only via the updateHabits callback,
     // behaviour should be good.
     const [habits, setHabits] = useState<IHabits>(props.data);
-    console.log("my props data is ", props.data);
-    console.log("my habits is ", habits);
 
     const updateHabits = useCallback(
         (newHabits: IHabits) => {

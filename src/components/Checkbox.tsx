@@ -44,7 +44,6 @@ export interface ICheckboxProps {
 
 export function Checkbox(props: ICheckboxProps) {
     const onLocalClick = useCallback(() => {
-        console.log("localClick");
         if (!props.locked) {
             props.onClick();
         }

@@ -5,16 +5,9 @@ import { useUserAuth } from "../context/SessionHelpers";
 import Habits from "../components/Habits";
 import { IHabits } from "../types/habits";
 
-const placeholderHabits: IHabits = {
-    title: "",
-    categories: [],
-};
-
 interface IUser {
-    habitsId: string;
+    habits_id: string;
 }
-
-const debugDoc = "zypiG4obgvl3T1Ja2gS2";
 
 function Landing(): JSX.Element {
     const user = useUserAuth();
@@ -23,42 +16,43 @@ function Landing(): JSX.Element {
     const habitsCollection = collection(db, "habits");
     const [habits, setHabits] = useState<IHabits>();
 
-    const userCollection = collection(db, "users");
+    const userCollection = collection(db, "habitusers");
 
     const loadData = useCallback(() => {
         console.log("user uid:", user?.uid);
         if (!user?.uid) {
             return;
         }
-        // getDoc(doc(userCollection, user?.uid)).then((userDoc) => {
-        //     if (userDoc.exists()) {
-        //         if (userDoc.data().habitsId) {
-        //             console.log("user habits id", userDoc.data().habitsId);
-        //             setUserHabitId(userDoc.data().habitsId);
-        getDoc(doc(habitsCollection, debugDoc)).then((habitsDoc) => {
-            if (habitsDoc.exists()) {
-                const data = habitsDoc.data();
-                const hhhh: IHabits = {
-                    title: habitsDoc.id,
-                    categories: data.categories,
-                };
-                setHabits(hhhh);
-            } else {
-                // TODO in this case the user doc exists, and has a habitsId
-                console.log("failed to fetch expected habits doc");
-            }
-        });
-        //     } else {
-        //         console.log("no habitsId");
-        //         console.log(userDoc.data());
-        //     }
-        // } else {
-        //     console.log("failed to fetch user details");
-        //     console.log(userDoc);
-        // }
-        // });
-        // TODO change this to use the user id to get the doc
-    }, [setHabits]);
+        getDoc(doc(userCollection, user?.uid))
+            .then((userDoc) => {
+                if (!userDoc.exists()) {
+                    return;
+                }
+                const userDocData: IUser = userDoc.data() as IUser;
+                const habits_id = userDocData.habits_id;
+                if (!habits_id) {
+                    return;
+                }
+
+                console.log("user habits id", habits_id);
+                setUserHabitId(userDoc.data().habitsId);
+                getDoc(doc(habitsCollection, habits_id)).then((habitsDoc) => {
+                    if (!habitsDoc.exists()) {
+                        return;
+                    }
+
+                    const data = habitsDoc.data();
+                    const hhhh: IHabits = {
+                        title: habitsDoc.id,
+                        categories: data.categories,
+                    };
+                    setHabits(hhhh);
+                });
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    }, [setUserHabitId, setHabits, habitsCollection, user, userCollection]);
 
     const updateHabits = useCallback(
         (newHabits: IHabits) => {
@@ -68,7 +62,7 @@ function Landing(): JSX.Element {
                 loadData();
             });
         },
-        [habitsCollection, loadData],
+        [habitsCollection, loadData, userHabitId],
     );
 
     useEffect(() => {
@@ -79,8 +73,7 @@ function Landing(): JSX.Element {
         <>
             <h1>Firebase Demo - Recipes</h1>
             <h2>{user?.email}</h2>
-            <button onClick={loadData}>Quick load data</button>
-            {habits && <Habits data={habits} updateHabits={updateHabits} />}
+            {!!habits && <Habits data={habits} updateHabits={updateHabits} />}
         </>
     );
 }

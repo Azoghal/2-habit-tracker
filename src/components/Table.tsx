@@ -22,7 +22,6 @@ export default function Table(props: ITableProps) {
     const [newCategoryTitle, setNewCategoryTitle] = useState<string>("");
 
     const handleNewCategorySubmit = () => {
-        console.log("submitting new category from table.tsx", newCategoryTitle);
         props.addCategory(newCategoryTitle);
         setNewCategoryTitle(""); // Clear the input field
     };

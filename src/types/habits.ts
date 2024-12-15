@@ -82,9 +82,9 @@ export function fillBlanks(
         return a.date;
     });
 
-    console.log("before activites dates", beforeDates);
+    // console.log("before activites dates", beforeDates);
 
-    console.log("expected length at end:", backwards + forwards + 1);
+    // console.log("expected length at end:", backwards + forwards + 1);
 
     const middays: number[] = [];
     for (let t = start; t <= end; t += DAY_SECONDS) {
@@ -92,7 +92,7 @@ export function fillBlanks(
         middays.push(middayTimestamp);
     }
 
-    console.log("length of middays we calculated", middays.length);
+    // console.log("length of middays we calculated", middays.length);
 
     const toAdd = middays
         .filter((d) => {
@@ -106,7 +106,7 @@ export function fillBlanks(
             return bob;
         });
 
-    console.log("things to add (", toAdd.length, ")", toAdd);
+    // console.log("things to add (", toAdd.length, ")", toAdd);
 
     const filledActivities = row.activities.concat(toAdd).sort((a, b) => {
         return a.date - b.date;

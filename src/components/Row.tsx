@@ -9,7 +9,6 @@ export interface IHabitProps {
 
 export default function Row(props: IHabitProps) {
     const sortedActivities = useMemo<Array<JSX.Element>>(() => {
-        console.log("sorting the activities for", props.title);
         const sorted = props.activities.sort((activityA, activityB) => {
             return activityA.date - activityB.date;
         });
