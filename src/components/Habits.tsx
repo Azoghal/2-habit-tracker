@@ -19,7 +19,7 @@ export const YEAR_MILLIS = 365 * DAY_SECONDS * 1000;
 export default function Habits(props: IHabitsProps) {
     const today = getTodayMidday();
     const [lockPast, setLockPast] = useState(false);
-    const [lockFuture, setLockFuture] = useState(false);
+    const [lockFuture, setLockFuture] = useState(true);
 
     // Represents a "staged" view of the habits.
     // as long as we call setHabits only via the updateHabits callback,
@@ -31,7 +31,7 @@ export default function Habits(props: IHabitsProps) {
             setHabits(newHabits);
             props.updateHabits(newHabits);
         },
-        [setHabits, props.updateHabits],
+        [setHabits, props],
     );
 
     const addCategory = useCallback(
@@ -45,7 +45,7 @@ export default function Habits(props: IHabitsProps) {
                 categories: habits.categories.concat(newCategory),
             });
         },
-        [props, habits, updateHabits],
+        [habits, updateHabits],
     );
 
     const addHabit = useCallback(
