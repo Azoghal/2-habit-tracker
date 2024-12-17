@@ -20,7 +20,7 @@ export default function Row(props: IHabitProps) {
     return (
         <>
             <div className="row">
-                <span className="row-title">---- {props.title}</span>
+                <span className="row-title">{props.title}</span>
                 {sortedActivities}
             </div>
         </>

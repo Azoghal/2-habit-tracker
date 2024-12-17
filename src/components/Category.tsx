@@ -66,7 +66,6 @@ export default function Category(props: ICategoryProps) {
                     return <Row {...habit} key={habit.title} />;
                 })}
                 <div className="new-habit">
-                    <span>---- </span>
                     <button className="c-btn" onClick={handleNewHabitSubmit}>
                         +
                     </button>
