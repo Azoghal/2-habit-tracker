@@ -1,3 +1,6 @@
+@use "../_vars/_variables" as *;
+@use "../_vars/_fonts" as *;
+
 // .category{
 //     grid-column: span 2;
 //     display: grid;
@@ -7,15 +10,20 @@
 
 .category-title {
     width: 150px;
-    display: inline-block; // todo will probs need to remove for grid stuff
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    justify-content: right;
+    display: flex;
+    margin: 0 32px 0 0;
+    font-size: $category-title-size;
+    font-weight: $font-weight-bold;
 }
 
 .new-habit {
     width: 150px;
     display: flex;
+    justify-content: right;
 }
 
 .new-habit-input {
