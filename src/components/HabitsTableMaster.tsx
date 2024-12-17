@@ -1,6 +1,5 @@
 import { User } from "@firebase/auth";
 import { IHabits } from "../types/habits";
-import { IUser } from "../pages/Landing";
 import {
     addDoc,
     collection,
@@ -12,6 +11,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { db } from "../firebase";
 import Habits from "./Habits";
+import { IUser, newUserClient as newUsersClient } from "../clients/users";
 
 export interface IHabitsTableMasterProps {
     // habitsDoc: IHabits,
@@ -38,6 +38,8 @@ export default function HabitsTableMaster(props: IHabitsTableMasterProps) {
             // 1. create a new habits doc
             // 2. create a new userhabits doc
             //      a. with the new habits doc in there
+
+            // TODO turn this into a habits client method
             const blankHabits: IHabits = {
                 title: "Your Habits",
                 categories: [],
@@ -47,6 +49,7 @@ export default function HabitsTableMaster(props: IHabitsTableMasterProps) {
                     const habitsId = newHabits.id;
                     const newUserDocRef = doc(userCollection, user_id);
                     const newUserDoc: IUser = {
+                        user_id: user_id,
                         habits_id: habitsId,
                     };
 
@@ -64,21 +67,19 @@ export default function HabitsTableMaster(props: IHabitsTableMasterProps) {
     );
 
     const loadUser = useCallback(() => {
-        getDoc(doc(userCollection, props.user.uid))
-            .then((userDoc) => {
-                if (!userDoc.exists()) {
-                    setUserDoc(undefined);
-                    setNeedToStart(true);
-                    return;
-                }
-                const userDocData: IUser = userDoc.data() as IUser;
-                setUserDoc(userDocData);
+        // TODO turn this into a users client method
+        newUsersClient()
+            .getUser(props.user.uid)
+            .then((user: IUser) => {
+                setUserDoc(user);
                 setNeedToStart(false);
             })
             .catch((e) => {
-                console.log("failed to get user doc:", e);
+                console.log("failed to get user: ", e);
+                // TODO think of a better way to handle the getting started flow
+                setNeedToStart(true);
             });
-    }, [props.user, userCollection, setUserDoc, setNeedToStart]);
+    }, [props.user.uid]);
 
     const loadHabits = useCallback(() => {
         console.log("loading habits");
