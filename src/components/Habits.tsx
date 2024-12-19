@@ -1,4 +1,4 @@
-import { fillAll, ICategory, IHabit, IHabits } from "../types/habits";
+import { ICategory, IHabit, IHabits } from "../types/habits";
 import { useCallback, useMemo, useState } from "react";
 import Table, { ITableProps } from "./Table";
 
@@ -21,7 +21,7 @@ export default function Habits(props: IHabitsProps) {
     const [lockPast, setLockPast] = useState(false);
     const [lockFuture, setLockFuture] = useState(true);
 
-    // Represents a "staged" view of the habits.
+    // Represents a "staged" view of the` habits.
     // as long as we call setHabits only via the updateHabits callback,
     // behaviour should be good.
     const [habits, setHabits] = useState<IHabits>(props.data);
@@ -85,16 +85,18 @@ export default function Habits(props: IHabitsProps) {
                 }
                 return c;
             });
+            // TODO this is really update staged habits
             updateHabits({ ...habits, categories: newCategories });
+            // we should also immediately call props.changeValue and provide the keys / path so that we can update the db properly
         },
         [habits, setHabits],
     );
 
     const filledHabitsMemo = useMemo(() => {
-        const filledHabits = fillAll(habits, today, 5, 5);
+        // const filledHabits = fillAll(habits, today, 5, 5);
         const tableProps: ITableProps = {
-            title: filledHabits.title,
-            categories: filledHabits.categories,
+            title: habits.title,
+            categories: habits.categories,
             lockFuture: lockFuture,
             lockPast: lockPast,
             addCategory,
