@@ -54,9 +54,9 @@ export function Checkbox(props: ICheckboxProps) {
             className={`checkbox-container ${props.locked ? "checkbox-container__locked" : ""}`}
             onClick={onLocalClick}
         >
-            <label className="checkbox-inner">
+            <div className="checkbox-inner">
                 <Box state={props.value} />
-            </label>
+            </div>
         </div>
     );
 }
