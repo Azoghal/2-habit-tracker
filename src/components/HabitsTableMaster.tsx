@@ -1,17 +1,13 @@
 import { User } from "@firebase/auth";
 import { IHabits } from "../types/habits";
-import { IUser } from "../pages/Landing";
-import {
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    setDoc,
-    updateDoc,
-} from "@firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
-import { db } from "../firebase";
 import Habits from "./Habits";
+import {
+    CreateHabitsUserResult,
+    IUser,
+    newUserClient as newUsersClient,
+} from "../clients/users";
+import { newHabitsClient } from "../clients/habits";
 
 export interface IHabitsTableMasterProps {
     // habitsDoc: IHabits,
@@ -20,88 +16,48 @@ export interface IHabitsTableMasterProps {
 }
 
 export default function HabitsTableMaster(props: IHabitsTableMasterProps) {
-    const habitsCollection = collection(db, "habits");
-    const userCollection = collection(db, "habitusers");
-
     const [userDoc, setUserDoc] = useState<IUser>();
     const [habits, setHabits] = useState<IHabits>();
     const [needToStart, setNeedToStart] = useState<boolean>(false);
 
-    const getStarted = useCallback(
-        (user_id: string) => {
-            if (user_id == "") {
-                console.log("failed to get started as no user id");
-                return;
-            }
-            // TODO check that we don't already have one...
-            // we have a user id, so we need to:
-            // 1. create a new habits doc
-            // 2. create a new userhabits doc
-            //      a. with the new habits doc in there
-            const blankHabits: IHabits = {
-                title: "Your Habits",
-                categories: [],
-            };
-            addDoc(habitsCollection, blankHabits)
-                .then((newHabits) => {
-                    const habitsId = newHabits.id;
-                    const newUserDocRef = doc(userCollection, user_id);
-                    const newUserDoc: IUser = {
-                        habits_id: habitsId,
-                    };
-
-                    setHabits(blankHabits);
-                    setUserDoc(newUserDoc);
-
-                    return setDoc(newUserDocRef, newUserDoc);
-                })
-                .catch((e) => {
-                    console.log("failed to set up new habits:", e);
-                    throw "failed to add new habits doc";
-                });
-        },
-        [habitsCollection, userCollection, setHabits, setUserDoc],
-    );
+    const getStarted = useCallback((user_id: string) => {
+        newUsersClient()
+            .createHabitsUser(user_id)
+            .then((res: CreateHabitsUserResult) => {
+                setHabits(res.habits);
+                setUserDoc(res.user);
+                setNeedToStart(false);
+            });
+    }, []);
 
     const loadUser = useCallback(() => {
-        getDoc(doc(userCollection, props.user.uid))
-            .then((userDoc) => {
-                if (!userDoc.exists()) {
-                    setUserDoc(undefined);
-                    setNeedToStart(true);
-                    return;
-                }
-                const userDocData: IUser = userDoc.data() as IUser;
-                setUserDoc(userDocData);
+        // TODO turn this into a users client method
+        newUsersClient()
+            .getUser(props.user.uid)
+            .then((user: IUser) => {
+                setUserDoc(user);
                 setNeedToStart(false);
             })
             .catch((e) => {
-                console.log("failed to get user doc:", e);
+                console.log("failed to get user: ", e);
+                // TODO think of a better way to handle the getting started flow
+                setNeedToStart(true);
             });
-    }, [props.user, userCollection, setUserDoc, setNeedToStart]);
+    }, [props.user.uid]);
 
     const loadHabits = useCallback(() => {
-        console.log("loading habits");
+        const client = newHabitsClient();
+
         if (userDoc) {
-            console.log("getting the habits doc");
-            getDoc(doc(habitsCollection, userDoc.habits_id))
-                .then((habitsDoc) => {
-                    if (!habitsDoc.exists()) {
-                        setHabits(undefined);
-                        return;
-                    }
-                    const data = habitsDoc.data();
-                    const dataHabits: IHabits = {
-                        title: habitsDoc.id,
-                        categories: data.categories,
-                    };
-                    setHabits(dataHabits);
-                })
-                .catch((e) => {
-                    console.log("failed to get habits doc:", e);
-                });
+            client.getHabits(userDoc.habits_id).then((res) => {
+                setHabits(res);
+            });
+        } else {
+            client.getHabitsForUser(props.user.uid).then((res) => {
+                setHabits(res);
+            });
         }
-    }, [habitsCollection, userDoc]);
+    }, [userDoc, setHabits, props.user]);
 
     const loadData = useCallback(() => {
         loadUser();
@@ -110,13 +66,19 @@ export default function HabitsTableMaster(props: IHabitsTableMasterProps) {
 
     const updateHabits = useCallback(
         (newHabits: IHabits) => {
-            updateDoc(doc(habitsCollection, userDoc?.habits_id), {
-                ...newHabits,
-            }).then(() => {
-                loadData();
-            });
+            if (!userDoc) {
+                return;
+            }
+            newHabitsClient()
+                .updateHabits(userDoc?.habits_id, newHabits)
+                .then(() => {
+                    loadData();
+                })
+                .catch((e) => {
+                    console.log("failed to update habits:", e);
+                });
         },
-        [habitsCollection, loadData, userDoc?.habits_id],
+        [userDoc, loadData],
     );
 
     // Todo we can solve lots of this by waiting for user to be not undefined efore rendering a child component
@@ -131,7 +93,7 @@ export default function HabitsTableMaster(props: IHabitsTableMasterProps) {
 
     return (
         <>
-            {habits ? (
+            {userDoc && habits ? (
                 <Habits data={habits} updateHabits={updateHabits} />
             ) : needToStart ? (
                 <button

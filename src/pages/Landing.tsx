@@ -1,10 +1,6 @@
 import { useUserAuth } from "../context/SessionHelpers";
 import HabitsTableMaster from "../components/HabitsTableMaster";
 
-export interface IUser {
-    habits_id: string;
-}
-
 function Landing(): JSX.Element {
     const user = useUserAuth();
 
