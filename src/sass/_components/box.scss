@@ -24,3 +24,7 @@
         border-right: $checkbox-width solid $checkbox-fill;
     }
 }
+
+.box-box-container:hover .tooltiptext {
+    visibility: visible;
+}

@@ -54,9 +54,8 @@ export function Checkbox(props: ICheckboxProps) {
             className={`checkbox-container ${props.locked ? "checkbox-container__locked" : ""}`}
             onClick={onLocalClick}
         >
-            <div className="checkbox-inner">
-                <Box state={props.value} />
-            </div>
+            <span className="tooltiptext">{props.date}</span>
+            <Box state={props.value} />
         </div>
     );
 }
