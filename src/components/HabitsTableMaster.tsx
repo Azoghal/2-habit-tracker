@@ -100,11 +100,22 @@ export default function HabitsTableMaster(props: IHabitsTableMasterProps) {
         }
     }, [userDoc]);
 
+    const fetchExperimentUser2 = useCallback(() => {
+        if (userDoc) {
+            newExperiments().getFullUserDoc2(userDoc?.user_id);
+        } else {
+            console.log("coulnd't fetch user");
+        }
+    }, [userDoc]);
+
     return (
         <>
             <div>
                 <button onClick={fetchExperimentUser}>
-                    fetch experiment user
+                    fetch experiment user full
+                </button>
+                <button onClick={fetchExperimentUser2}>
+                    fetch experiment user 2
                 </button>
             </div>
             {userDoc && habits ? (
