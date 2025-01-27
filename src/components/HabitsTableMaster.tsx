@@ -8,6 +8,7 @@ import {
     newUserClient as newUsersClient,
 } from "../clients/users";
 import { newHabitsClient } from "../clients/habits";
+import { newExperiments } from "../clients/experimentHabits";
 
 export interface IHabitsTableMasterProps {
     // habitsDoc: IHabits,
@@ -91,8 +92,21 @@ export default function HabitsTableMaster(props: IHabitsTableMasterProps) {
         loadHabits();
     }, [userDoc]);
 
+    const fetchExperimentUser = useCallback(() => {
+        if (userDoc) {
+            newExperiments().getFullUserDoc(userDoc?.user_id);
+        } else {
+            console.log("coulnd't fetch user");
+        }
+    }, [userDoc]);
+
     return (
         <>
+            <div>
+                <button onClick={fetchExperimentUser}>
+                    fetch experiment user
+                </button>
+            </div>
             {userDoc && habits ? (
                 <Habits data={habits} updateHabits={updateHabits} />
             ) : needToStart ? (
