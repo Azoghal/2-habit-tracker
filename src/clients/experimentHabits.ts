@@ -7,13 +7,21 @@ interface IEUser {
     id: string;
 }
 
-// interface IECategory {
-//     name: string;
-// }
+type IEUserWithCategories = IEUser & { categories: IECategory[] };
 
-// interface IEHabit {
-//     name: string;
-// }
+interface IECategory {
+    path: string;
+    name: string;
+}
+
+type IECategoryWithHabits = IECategory & { habits: IEHabit[] };
+
+interface IEHabit {
+    path: string;
+    name: string;
+}
+
+type IEHabitWithActivities = IEHabit & { activities: IEActivity[] };
 
 interface IEActivity {
     date: number;
@@ -35,14 +43,14 @@ export class ExperimentsClient {
             throw "user doc does not exist";
         }
         const user: IEUser = {
-            name: docSnap.data().name ?? "Unkown",
             id: docSnap.id,
+            name: docSnap.data().name ?? "Unknown",
         };
         return user;
     }
 
     // TODO actually a promise of categories -
-    async getUserCategories(user_id: string): Promise<string[]> {
+    async getUserCategories(user_id: string): Promise<IECategory[]> {
         const categoriesCollection = collection(
             db,
             this.collectionName,
@@ -53,25 +61,35 @@ export class ExperimentsClient {
             throw e;
         });
 
-        // let categoriesList: string[] = [];
-        // categories.forEach((c) => {
-        //     if (c.exists()) {
-        //         categoriesList = categoriesList.concat(c.id);
-        //     } else {
-        //         categoriesList = categoriesList.concat("unknown");
-        //     }
-        // });
-
-        // return categoriesList;
-
         return categories.docs.map((c) => {
-            return c.id;
+            return {
+                path: "/categories/" + c.id,
+                name: c.id,
+            };
         });
+    }
+
+    async categoriesToCategoriesWithHabits(
+        categories: IECategory[],
+    ): Promise<IECategoryWithHabits[]> {
+        const categoriesWithHabits = categories.map(
+            async (category: IECategory) => {
+                const habits = await this.getCategoryHabits(category.path);
+                const habitWithActivity: IECategoryWithHabits = {
+                    name: category.name,
+                    path: category.path,
+                    habits: habits,
+                };
+                return habitWithActivity;
+            },
+        );
+
+        return Promise.all(categoriesWithHabits);
     }
 
     // get the habit names for a particular category
     // category_path is <user_id>/categories/<category_id>
-    async getCategoryHabits(category_path: string): Promise<string[]> {
+    async getCategoryHabits(category_path: string): Promise<IEHabit[]> {
         const habitsCollection = collection(
             db,
             this.collectionName,
@@ -83,8 +101,27 @@ export class ExperimentsClient {
         });
         // TODO need to filter for ! _.exists()?
         return habits.docs.map((h) => {
-            return h.id;
+            return {
+                name: h.id,
+                path: category_path + "/habits/" + h.id,
+            };
         });
+    }
+
+    async habitsToHabitsWithActivities(
+        habits: IEHabit[],
+    ): Promise<IEHabitWithActivities[]> {
+        const habitsWithActivities = habits.map(async (habit: IEHabit) => {
+            const activities = await this.getHabitActivities(habit.path);
+            const habitWithActivity: IEHabitWithActivities = {
+                name: habit.name,
+                path: habit.path,
+                activities: activities,
+            };
+            return habitWithActivity;
+        });
+
+        return Promise.all(habitsWithActivities);
     }
 
     //habit_path is fully qualified to get a single activity
@@ -97,10 +134,7 @@ export class ExperimentsClient {
 
         // TODO rip out into helper?
         const dataa = activitiesDoc.data();
-        console.log(dataa);
         const activities: IDocActivities = dataa.activities;
-        console.log(activities);
-
         const activitesAsMap: Map<string, number> = new Map(
             Object.entries(activities),
         );
@@ -114,7 +148,7 @@ export class ExperimentsClient {
         });
     }
 
-    async getFullUserDoc2(user_id: string): Promise<void> {
+    async getFullUserDoc2(user_id: string): Promise<IEUserWithCategories> {
         const userDocRef = doc(db, this.collectionName, user_id);
         const docSnap = await getDoc(userDocRef).catch((e) => {
             console.log("failed to get user: ", e);
@@ -124,22 +158,16 @@ export class ExperimentsClient {
             throw "user doc does not exist";
         }
 
-        const categoryNames: string[] = await this.getUserCategories(user_id);
-        console.log("categories", categoryNames);
+        const categories: IECategory[] = await this.getUserCategories(user_id);
+        console.log("categories", categories);
 
-        categoryNames.forEach(async (categoryName: string) => {
-            const habitNames = await this.getCategoryHabits(
-                `${user_id}/categories/${categoryName}`,
-            );
-            console.log("habits", habitNames);
+        const res: IEUserWithCategories = {
+            id: user_id,
+            name: docSnap.data().name,
+            categories: categories,
+        };
 
-            habitNames.forEach(async (habitName: string) => {
-                const activities = await this.getHabitActivities(
-                    `${user_id}/categories/${categoryName}/habits/${habitName}`,
-                );
-                console.log("activities", activities);
-            });
-        });
+        return res;
     }
 
     async getFullUserDoc(user_id: string): Promise<void> {
