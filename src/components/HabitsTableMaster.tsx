@@ -32,7 +32,6 @@ export default function HabitsTableMaster(props: IHabitsTableMasterProps) {
     }, []);
 
     const loadUser = useCallback(() => {
-        // TODO turn this into a users client method
         newUsersClient()
             .getUser(props.user.uid)
             .then((user: IUser) => {

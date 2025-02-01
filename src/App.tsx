@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import Signin from "./pages/Signin";
 import UserAuthLayout from "./routing/UserAuthLayout";
 import "./sass/main.scss";
+import Experiment from "./pages/Experiment";
 
 function App() {
     return (
@@ -14,6 +15,10 @@ function App() {
                         <Route path="/" element={<Signin />} />
                         <Route path="/" element={<UserAuthLayout />}>
                             <Route path="/landing" element={<Landing />} />
+                            <Route
+                                path="/experiment"
+                                element={<Experiment />}
+                            />
                         </Route>
                     </Routes>
                 </section>

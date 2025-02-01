@@ -9,21 +9,21 @@ interface IEUser {
 
 type IEUserWithCategories = IEUser & { categories: IECategory[] };
 
-interface IECategory {
+export interface IECategory {
     path: string;
     name: string;
 }
 
 type IECategoryWithHabits = IECategory & { habits: IEHabit[] };
 
-interface IEHabit {
+export interface IEHabit {
     path: string;
     name: string;
 }
 
 type IEHabitWithActivities = IEHabit & { activities: IEActivity[] };
 
-interface IEActivity {
+export interface IEActivity {
     date: number;
     value: number;
 }
