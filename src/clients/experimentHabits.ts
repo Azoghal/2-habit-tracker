@@ -120,7 +120,7 @@ export class ExperimentsClient {
 
     //habit_path is fully qualified to get a single activity
     async getHabitActivities(habit_path: string): Promise<IEActivity[]> {
-        const habitRef = doc(db, this.collectionName, habit_path);
+        const habitRef = doc(db, habit_path);
         const activitiesDoc = await getDoc(habitRef);
         if (!activitiesDoc.exists()) {
             throw "activities does not exist";

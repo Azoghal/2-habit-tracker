@@ -1,5 +1,5 @@
 // a row of checkboxes
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CheckboxStateFromInt, ECheckbox, IECheckboxProps } from "./ECheckbox";
 import { IEActivity, newExperiments } from "../../clients/experimentHabits";
 
@@ -18,11 +18,12 @@ export interface IEHabitProps {
 export default function ERow(props: IEHabitProps) {
     const [activities, setActivities] = useState<IECheckboxProps[]>([]);
 
-    useEffect(() => {
+    const loadData = useCallback(() => {
+        console.log("ERow path", props.path);
         newExperiments()
             .getHabitActivities(props.path)
             .then((as) => {
-                const bobs: IECheckboxProps[] = as.map((a: IEActivity) => {
+                const acts: IECheckboxProps[] = as.map((a: IEActivity) => {
                     const checkBoxProps: IECheckboxProps = {
                         date: a.date,
                         value: a.value,
@@ -34,27 +35,42 @@ export default function ERow(props: IEHabitProps) {
                     };
                     return checkBoxProps;
                 });
-                setActivities(bobs);
+                console.log(acts);
+                setActivities(acts);
+            })
+            .catch((e) => {
+                console.log("failed to get habit activities", e);
             });
-    }, []);
+    }, [props.path]);
 
-    const sortedActivities = useMemo<Array<JSX.Element>>(() => {
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
+
+    const sortedActivities = useMemo<IECheckboxProps[]>(() => {
         if (activities.length > 0) {
             return [];
         }
-        const sorted = activities.sort((activityA, activityB) => {
+        return activities.sort((activityA, activityB) => {
             return activityA.date - activityB.date;
         });
-        return sorted.map((activity) => {
-            return <ECheckbox {...activity} key={activity.date} />;
-        });
     }, [activities]);
+
+    //return sorted.map((activity) => {
+    //     return <ECheckbox {...activity} key={activity.date} />;
+    // });
 
     return (
         <>
             <div className="row">
                 <span className="row-title">{props.title}</span>
-                {sortedActivities}
+                {activities.length > 0 ? (
+                    sortedActivities.map((activity) => (
+                        <ECheckbox {...activity} key={activity.date} />
+                    ))
+                ) : (
+                    <>Apparently length is 0</>
+                )}
             </div>
         </>
     );

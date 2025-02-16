@@ -38,7 +38,7 @@ export default function ECategory(props: IECategoryProps) {
             .catch((e) => {
                 console.log("failed to set habits in ECategory:", e);
             });
-    }, []);
+    }, [props.path]);
 
     const addHabit = useCallback((newHabitName: string) => {
         console.log("unimplimented add habit", newHabitName);
@@ -61,7 +61,7 @@ export default function ECategory(props: IECategoryProps) {
                     return (
                         <ERow
                             title={habit.name}
-                            path={props.path + "/" + habit.name}
+                            path={habit.path}
                             key={habit.name}
                             futureLocked={props.lockFuture}
                             pastLocked={props.lockPast}
