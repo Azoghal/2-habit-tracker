@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import ERow from "./ERow";
-import { IEHabit } from "../../clients/experimentHabits";
+import { IEHabit, newExperiments } from "../../clients/experimentHabits";
 
 export interface IECategoryProps {
     title: string;
@@ -28,8 +28,16 @@ export default function ECategory(props: IECategoryProps) {
     const [habits, setHabits] = useState<IEHabit[]>([]);
 
     const loadData = useCallback(() => {
-        // TODO set habits
-        setHabits([]);
+        console.log("loadData ECategory: ", props.path);
+        const experimentClient = newExperiments();
+        experimentClient
+            .getCategoryHabits(props.path)
+            .then((habits: IEHabit[]) => {
+                setHabits(habits);
+            })
+            .catch((e) => {
+                console.log("failed to set habits in ECategory:", e);
+            });
     }, []);
 
     const addHabit = useCallback((newHabitName: string) => {

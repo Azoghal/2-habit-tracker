@@ -16,7 +16,6 @@ export default function ETable(props: IETableProps) {
 
     const loadData = useCallback(() => {
         // TODO set Categories
-        console.log("loading data etable,", props.path);
         const experimentClient = newExperiments();
         experimentClient
             .getUserCategories(props.path)
@@ -48,7 +47,7 @@ export default function ETable(props: IETableProps) {
                 return (
                     <ECategory
                         title={category.name}
-                        path={category.path}
+                        path={props.path + category.path}
                         lockFuture={props.lockFuture}
                         lockPast={props.lockPast}
                         key={category.name}

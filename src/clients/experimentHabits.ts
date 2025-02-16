@@ -88,11 +88,7 @@ export class ExperimentsClient {
     // get the habit names for a particular category
     // category_path is <user_id>/categories/<category_id>
     async getCategoryHabits(category_path: string): Promise<IEHabit[]> {
-        const habitsCollection = collection(
-            db,
-            this.collectionName,
-            category_path + "/habits",
-        );
+        const habitsCollection = collection(db, category_path, "habits");
         const habits = await getDocs(habitsCollection).catch((e) => {
             console.log(e);
             throw e;
