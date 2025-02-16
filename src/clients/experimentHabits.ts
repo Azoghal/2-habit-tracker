@@ -1,5 +1,6 @@
 import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
 import { db } from "../firebase";
+import { P_CATEGORIES, P_EXPERIMENTS_USERS } from "./schema";
 
 // export type CreateHabitsResult = IHabits & { id: string };
 interface IEUser {
@@ -31,7 +32,7 @@ export interface IEActivity {
 type IDocActivities = Map<number, number>;
 
 export class ExperimentsClient {
-    private collectionName: string = "experimentsUsers";
+    private collectionName: string = P_EXPERIMENTS_USERS;
 
     async getUserDoc(user_id: string): Promise<IEUser> {
         const userDocRef = doc(db, this.collectionName, user_id);
@@ -50,12 +51,9 @@ export class ExperimentsClient {
     }
 
     // TODO actually a promise of categories -
-    async getUserCategories(user_id: string): Promise<IECategory[]> {
-        const categoriesCollection = collection(
-            db,
-            this.collectionName,
-            user_id + "/categories",
-        );
+    async getUserCategories(userPath: string): Promise<IECategory[]> {
+        console.log(userPath);
+        const categoriesCollection = collection(db, userPath, P_CATEGORIES);
         const categories = await getDocs(categoriesCollection).catch((e) => {
             console.log(e);
             throw e;
@@ -149,7 +147,8 @@ export class ExperimentsClient {
     }
 
     async getFullUserDoc2(user_id: string): Promise<IEUserWithCategories> {
-        const userDocRef = doc(db, this.collectionName, user_id);
+        const userPath = this.collectionName + "/" + user_id;
+        const userDocRef = doc(db, userPath);
         const docSnap = await getDoc(userDocRef).catch((e) => {
             console.log("failed to get user: ", e);
             throw "failed to get user" + e;
@@ -158,8 +157,7 @@ export class ExperimentsClient {
             throw "user doc does not exist";
         }
 
-        const categories: IECategory[] = await this.getUserCategories(user_id);
-        console.log("categories", categories);
+        const categories: IECategory[] = await this.getUserCategories(userPath);
 
         const res: IEUserWithCategories = {
             id: user_id,

@@ -28,6 +28,7 @@ export default function ECategory(props: IECategoryProps) {
     const [habits, setHabits] = useState<IEHabit[]>([]);
 
     const loadData = useCallback(() => {
+        // TODO set habits
         setHabits([]);
     }, []);
 

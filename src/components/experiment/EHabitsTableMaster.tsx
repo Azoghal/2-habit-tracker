@@ -4,6 +4,7 @@ import EHabits from "./EHabits";
 import { IUser, newUserClient as newUsersClient } from "../../clients/users";
 import { newExperiments } from "../../clients/experimentHabits";
 import EGetStarted from "./EGetStarted";
+import { P_EXPERIMENTS_USERS } from "../../clients/schema";
 
 export interface IHabitsTableMasterProps {
     // habitsDoc: IHabits,
@@ -78,7 +79,7 @@ export default function EHabitsTableMaster(props: IHabitsTableMasterProps) {
             {userDoc ? (
                 <EHabits
                     title={userDoc.display_name + "'s Habits"}
-                    path={"experimentUsers/" + userDoc?.user_id}
+                    path={P_EXPERIMENTS_USERS + "/" + userDoc?.user_id}
                 />
             ) : needToStart ? (
                 <EGetStarted onClick={() => getStarted(props.user.uid)} />

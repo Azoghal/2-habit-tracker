@@ -1,7 +1,7 @@
 // a row of checkboxes
 import { useCallback, useEffect, useState } from "react";
 import ECategory from "./ECategory";
-import { ICategory } from "../../types/habits";
+import { IECategory, newExperiments } from "../../clients/experimentHabits";
 
 export interface IETableProps {
     title: string;
@@ -12,12 +12,21 @@ export interface IETableProps {
 
 export default function ETable(props: IETableProps) {
     const [newCategoryTitle, setNewCategoryTitle] = useState<string>("");
-    const [categories, setCategories] = useState<ICategory[]>([]);
+    const [categories, setCategories] = useState<IECategory[]>([]);
 
     const loadData = useCallback(() => {
         // TODO set Categories
-        setCategories([]);
-    }, []);
+        console.log("loading data etable,", props.path);
+        const experimentClient = newExperiments();
+        experimentClient
+            .getUserCategories(props.path)
+            .then((resp: IECategory[]) => {
+                setCategories(resp);
+            })
+            .catch((e) => {
+                console.log("failed to load categories in ETable", e);
+            });
+    }, [props.path]);
 
     const addCategory = useCallback((categoryName: string) => {
         console.log("unimplimented add category", categoryName);
@@ -38,11 +47,11 @@ export default function ETable(props: IETableProps) {
             {categories.map((category) => {
                 return (
                     <ECategory
-                        title={category.title}
-                        path={props.path + "/" + category.title}
+                        title={category.name}
+                        path={category.path}
                         lockFuture={props.lockFuture}
                         lockPast={props.lockPast}
-                        key={category.title}
+                        key={category.name}
                     />
                 );
             })}

@@ -2,6 +2,7 @@ import { doc, getDoc, setDoc } from "@firebase/firestore";
 import { db } from "../firebase";
 import { CreateHabitsResult, newHabitsClient } from "./habits";
 import { IHabits } from "../types/habits";
+import { P_HABIT_USERS } from "./schema";
 
 // TODO whack all our models in here
 
@@ -18,7 +19,7 @@ export interface CreateHabitsUserResult {
 
 // Create separate client classes for each collection
 export class UserClient {
-    private collectionName: string = "habitusers";
+    private collectionName: string = P_HABIT_USERS;
 
     // get a user by id. Throws if the user does not exist
     async getUser(id: string): Promise<IUser> {
@@ -30,7 +31,6 @@ export class UserClient {
         }
 
         const data = { ...docSnap.data() };
-        console.log(data);
         return {
             display_name: data.display_name ?? "Unknown",
             user_id: docSnap.id,

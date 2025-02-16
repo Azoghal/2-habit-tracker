@@ -8,12 +8,13 @@ import {
 import { db } from "../firebase";
 import { IHabits } from "../types/habits";
 import { IUser, newUserClient } from "./users";
+import { P_HABITS } from "./schema";
 
 export type CreateHabitsResult = IHabits & { id: string };
 
 // Create separate client classes for each collection
 export class HabitsClient {
-    private collectionName: string = "habits";
+    private collectionName: string = P_HABITS;
 
     async getHabitsForUser(user_id: string): Promise<IHabits> {
         const theUser: IUser = await newUserClient()
