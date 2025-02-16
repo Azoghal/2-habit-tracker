@@ -6,6 +6,7 @@ import { IHabits } from "../types/habits";
 // TODO whack all our models in here
 
 export interface IUser {
+    display_name: string; // TODO make mandatory
     user_id: string;
     habits_id: string;
 }
@@ -29,7 +30,9 @@ export class UserClient {
         }
 
         const data = { ...docSnap.data() };
+        console.log(data);
         return {
+            display_name: data.display_name ?? "Unknown",
             user_id: docSnap.id,
             habits_id: data.habits_id,
         } as IUser;
@@ -52,6 +55,7 @@ export class UserClient {
         const habitsRes: CreateHabitsResult =
             await newHabitsClient().createHabits("Your habits");
         const user: IUser = await this.createUser({
+            display_name: "New User",
             user_id,
             habits_id: habitsRes.id,
         });

@@ -76,7 +76,10 @@ export default function EHabitsTableMaster(props: IHabitsTableMasterProps) {
                 </button>
             </div>
             {userDoc ? (
-                <EHabits title={"pretend we know"} path={"userPath/things"} />
+                <EHabits
+                    title={userDoc.display_name + "'s Habits"}
+                    path={"experimentUsers/" + userDoc?.user_id}
+                />
             ) : needToStart ? (
                 <EGetStarted onClick={() => getStarted(props.user.uid)} />
             ) : (
