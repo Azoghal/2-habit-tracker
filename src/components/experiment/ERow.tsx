@@ -48,7 +48,7 @@ export default function ERow(props: IEHabitProps) {
     }, [loadData]);
 
     const sortedActivities = useMemo<IECheckboxProps[]>(() => {
-        if (activities.length > 0) {
+        if (activities.length == 0) {
             return [];
         }
         return activities.sort((activityA, activityB) => {
@@ -56,20 +56,16 @@ export default function ERow(props: IEHabitProps) {
         });
     }, [activities]);
 
-    //return sorted.map((activity) => {
-    //     return <ECheckbox {...activity} key={activity.date} />;
-    // });
-
     return (
         <>
             <div className="row">
                 <span className="row-title">{props.title}</span>
-                {activities.length > 0 ? (
+                {sortedActivities.length > 0 ? (
                     sortedActivities.map((activity) => (
                         <ECheckbox {...activity} key={activity.date} />
                     ))
                 ) : (
-                    <>Apparently length is 0</>
+                    <>...</>
                 )}
             </div>
         </>
