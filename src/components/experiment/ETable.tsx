@@ -27,19 +27,22 @@ export default function ETable(props: IETableProps) {
             });
     }, [props.path]);
 
-    const addCategory = useCallback((categoryName: string) => {
-        newExperiments()
-            .addCategory(props.path, categoryName)
-            .then((newCategory: IECategory) => {
-                setCategories((oldCategories: IECategory[]) => {
-                    return oldCategories.concat(newCategory);
+    const addCategory = useCallback(
+        (categoryName: string) => {
+            newExperiments()
+                .addCategory(props.path, categoryName)
+                .then((newCategory: IECategory) => {
+                    setCategories((oldCategories: IECategory[]) => {
+                        return oldCategories.concat(newCategory);
+                    });
+                    loadData();
+                })
+                .catch((e) => {
+                    console.log("failed to add category: ", e);
                 });
-                loadData();
-            })
-            .catch((e) => {
-                console.log("failed to add category: ", e);
-            });
-    }, []);
+        },
+        [loadData, props.path],
+    );
 
     const handleNewCategorySubmit = () => {
         addCategory(newCategoryTitle);
