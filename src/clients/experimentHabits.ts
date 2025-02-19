@@ -1,6 +1,6 @@
-import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc } from "@firebase/firestore";
 import { db } from "../firebase";
-import { P_CATEGORIES, P_EXPERIMENTS_USERS } from "./schema";
+import { P_CATEGORIES, P_EXPERIMENTS_USERS, P_HABITS } from "./schema";
 
 // export type CreateHabitsResult = IHabits & { id: string };
 interface IEUser {
@@ -15,14 +15,10 @@ export interface IECategory {
     name: string;
 }
 
-type IECategoryWithHabits = IECategory & { habits: IEHabit[] };
-
 export interface IEHabit {
     path: string;
     name: string;
 }
-
-type IEHabitWithActivities = IEHabit & { activities: IEActivity[] };
 
 export interface IEActivity {
     date: number;
@@ -67,28 +63,27 @@ export class ExperimentsClient {
         });
     }
 
-    async categoriesToCategoriesWithHabits(
-        categories: IECategory[],
-    ): Promise<IECategoryWithHabits[]> {
-        const categoriesWithHabits = categories.map(
-            async (category: IECategory) => {
-                const habits = await this.getCategoryHabits(category.path);
-                const habitWithActivity: IECategoryWithHabits = {
-                    name: category.name,
-                    path: category.path,
-                    habits: habits,
-                };
-                return habitWithActivity;
-            },
-        );
+    async addCategory(
+        user_path: string,
+        category_name: string,
+    ): Promise<IECategory> {
+        const docRef = doc(db, user_path, P_CATEGORIES, category_name);
 
-        return Promise.all(categoriesWithHabits);
+        await setDoc(docRef, {}).catch((e) => {
+            throw "failed to create new category " + category_name + e;
+        });
+
+        const madeCategory: IECategory = {
+            name: category_name,
+            path: docRef.path,
+        };
+        return madeCategory;
     }
 
     // get the habit names for a particular category
     // category_path is <user_id>/categories/<category_id>
     async getCategoryHabits(category_path: string): Promise<IEHabit[]> {
-        const habitsCollection = collection(db, category_path, "habits");
+        const habitsCollection = collection(db, category_path, P_HABITS);
         const habits = await getDocs(habitsCollection).catch((e) => {
             console.log(e);
             throw e;
@@ -97,25 +92,31 @@ export class ExperimentsClient {
         return habits.docs.map((h) => {
             return {
                 name: h.id,
-                path: category_path + "/habits/" + h.id,
+                path: category_path + "/" + P_HABITS + "/" + h.id,
             };
         });
     }
 
-    async habitsToHabitsWithActivities(
-        habits: IEHabit[],
-    ): Promise<IEHabitWithActivities[]> {
-        const habitsWithActivities = habits.map(async (habit: IEHabit) => {
-            const activities = await this.getHabitActivities(habit.path);
-            const habitWithActivity: IEHabitWithActivities = {
-                name: habit.name,
-                path: habit.path,
-                activities: activities,
-            };
-            return habitWithActivity;
+    async addCategoryHabit(
+        category_path: string,
+        habit_name: string,
+    ): Promise<IEHabit> {
+        const docRef = doc(db, category_path, "habits", habit_name);
+
+        await setDoc(docRef, {}).catch((e) => {
+            throw (
+                "failed to create new habit in category" +
+                category_path +
+                " : " +
+                e
+            );
         });
 
-        return Promise.all(habitsWithActivities);
+        const madeHabit: IEHabit = {
+            name: habit_name,
+            path: docRef.path,
+        };
+        return madeHabit;
     }
 
     //habit_path is fully qualified to get a single activity

@@ -28,7 +28,17 @@ export default function ETable(props: IETableProps) {
     }, [props.path]);
 
     const addCategory = useCallback((categoryName: string) => {
-        console.log("unimplimented add category", categoryName);
+        newExperiments()
+            .addCategory(props.path, categoryName)
+            .then((newCategory: IECategory) => {
+                setCategories((oldCategories: IECategory[]) => {
+                    return oldCategories.concat(newCategory);
+                });
+                loadData();
+            })
+            .catch((e) => {
+                console.log("failed to add category: ", e);
+            });
     }, []);
 
     const handleNewCategorySubmit = () => {

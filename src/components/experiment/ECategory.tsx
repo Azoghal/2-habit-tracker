@@ -40,9 +40,23 @@ export default function ECategory(props: IECategoryProps) {
             });
     }, [props.path]);
 
-    const addHabit = useCallback((newHabitName: string) => {
-        console.log("unimplimented add habit", newHabitName);
-    }, []);
+    const addHabit = useCallback(
+        (newHabitName: string) => {
+            newExperiments()
+                .addCategoryHabit(props.path, newHabitName)
+                .then((newHabit: IEHabit) => {
+                    // set the habits with the one we got back, then reload for sanity
+                    setHabits((oldHabits: IEHabit[]) => {
+                        return oldHabits.concat(newHabit);
+                    });
+                    loadData();
+                })
+                .catch((e) => {
+                    console.log("failed to add new habit: ", e);
+                });
+        },
+        [loadData, props.path],
+    );
 
     const handleNewHabitSubmit = () => {
         addHabit(newHabitTitle);
