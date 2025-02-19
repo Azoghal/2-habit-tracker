@@ -48,7 +48,6 @@ export class ExperimentsClient {
 
     // TODO actually a promise of categories -
     async getUserCategories(userPath: string): Promise<IECategory[]> {
-        console.log(userPath);
         const categoriesCollection = collection(db, userPath, P_CATEGORIES);
         const categories = await getDocs(categoriesCollection).catch((e) => {
             console.log(e);
@@ -130,9 +129,11 @@ export class ExperimentsClient {
         // TODO rip out into helper?
         const dataa = activitiesDoc.data();
         const activities: IDocActivities = dataa.activities;
-        const activitesAsMap: Map<string, number> = new Map(
-            Object.entries(activities),
-        );
+
+        const activitesAsMap: Map<string, number> =
+            activities == undefined
+                ? new Map()
+                : new Map(Object.entries(activities));
 
         return Array.from(activitesAsMap.entries()).map(([key, value]) => {
             const activity: IEActivity = {

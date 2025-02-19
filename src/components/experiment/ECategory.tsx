@@ -9,6 +9,7 @@ export interface IECategoryProps {
     // TODO move the global table settings into a context?
     lockFuture: boolean;
     lockPast: boolean;
+    dates: number[];
 }
 
 // function shouldLock(
@@ -28,7 +29,6 @@ export default function ECategory(props: IECategoryProps) {
     const [habits, setHabits] = useState<IEHabit[]>([]);
 
     const loadData = useCallback(() => {
-        console.log("loadData ECategory: ", props.path);
         const experimentClient = newExperiments();
         experimentClient
             .getCategoryHabits(props.path)
@@ -79,6 +79,7 @@ export default function ECategory(props: IECategoryProps) {
                             key={habit.name}
                             futureLocked={props.lockFuture}
                             pastLocked={props.lockPast}
+                            dates={props.dates}
                         />
                     );
                 })}

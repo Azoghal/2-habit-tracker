@@ -31,6 +31,18 @@ export default function EHabits(props: IEHabitsProps) {
         setLockFuture((prev) => !prev);
     }, [setLockFuture]);
 
+    const getDates = useCallback(() => {
+        const today = getTodayMidday();
+        const start = today - 7 * DAY_SECONDS;
+        const end = today + 7 * DAY_SECONDS;
+
+        const middays: number[] = [];
+        for (let t = start; t <= end; t += DAY_SECONDS) {
+            middays.push(t);
+        }
+        return middays;
+    }, []);
+
     return (
         <>
             <button className="" onClick={toggleLockPast}>
@@ -45,6 +57,7 @@ export default function EHabits(props: IEHabitsProps) {
                     path={props.path}
                     lockFuture={lockFuture}
                     lockPast={lockPast}
+                    dates={getDates()}
                 />
             }
         </>

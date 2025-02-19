@@ -8,6 +8,7 @@ export interface IETableProps {
     path: string;
     lockPast: boolean;
     lockFuture: boolean;
+    dates: number[];
 }
 
 export default function ETable(props: IETableProps) {
@@ -64,6 +65,7 @@ export default function ETable(props: IETableProps) {
                         lockFuture={props.lockFuture}
                         lockPast={props.lockPast}
                         key={category.name}
+                        dates={props.dates}
                     />
                 );
             })}

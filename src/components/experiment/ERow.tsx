@@ -1,13 +1,16 @@
 // a row of checkboxes
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CheckboxStateFromInt, ECheckbox, IECheckboxProps } from "./ECheckbox";
 import { IEActivity, newExperiments } from "../../clients/experimentHabits";
+import { getTodayMidday } from "./EHabits";
 
 export interface IEHabitProps {
     title: string;
     path: string;
     futureLocked: boolean;
     pastLocked: boolean;
+    //TODO move into a table settings context?
+    dates: number[];
 }
 
 // ERow is for a single activity.
@@ -16,30 +19,17 @@ export interface IEHabitProps {
 // and the locked bools
 // It will load the required ones, or create placeholders
 export default function ERow(props: IEHabitProps) {
-    const [activities, setActivities] = useState<IECheckboxProps[]>([]);
+    const [activities, setActivities] = useState<IEActivity[]>([]);
 
     const loadData = useCallback(() => {
-        console.log("ERow path", props.path);
         newExperiments()
             .getHabitActivities(props.path)
             .then((as) => {
-                const acts: IECheckboxProps[] = as.map((a: IEActivity) => {
-                    const checkBoxProps: IECheckboxProps = {
-                        date: a.date,
-                        value: a.value,
-                        state: CheckboxStateFromInt(a.value),
-                        locked: false,
-                        onClick() {
-                            console.log("unimplemented at the mo");
-                        },
-                    };
-                    return checkBoxProps;
-                });
-                console.log(acts);
-                setActivities(acts);
+                setActivities(as);
             })
             .catch((e) => {
                 console.log("failed to get habit activities", e);
+                setActivities([]);
             });
     }, [props.path]);
 
@@ -47,27 +37,89 @@ export default function ERow(props: IEHabitProps) {
         loadData();
     }, [loadData]);
 
-    const sortedActivities = useMemo<IECheckboxProps[]>(() => {
-        if (activities.length == 0) {
-            return [];
-        }
-        return activities.sort((activityA, activityB) => {
-            return activityA.date - activityB.date;
-        });
-    }, [activities]);
-
     return (
         <>
             <div className="row">
                 <span className="row-title">{props.title}</span>
-                {sortedActivities.length > 0 ? (
-                    sortedActivities.map((activity) => (
-                        <ECheckbox {...activity} key={activity.date} />
-                    ))
-                ) : (
-                    <>...</>
-                )}
+                <EDateFilledRow
+                    activities={activities}
+                    dates={props.dates}
+                    lockFuture={props.futureLocked}
+                    lockPast={props.pastLocked}
+                ></EDateFilledRow>
             </div>
+        </>
+    );
+}
+
+interface IEDateFilledRowProps {
+    activities: IEActivity[];
+    dates: number[];
+    lockPast: boolean;
+    lockFuture: boolean;
+}
+
+function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
+    const [checkboxProps, setCheckboxProps] = useState<IECheckboxProps[]>([]);
+
+    useEffect(() => {
+        const activities = props.activities;
+
+        // filter out the ones that are outside the range
+        const filteredActivities = activities.filter((activity) => {
+            return props.dates.includes(activity.date);
+        });
+
+        // get existing dates so we can add the non existing ones
+        const existingDates = filteredActivities.map((activity) => {
+            return activity.date;
+        });
+
+        // add the missing dates with value 0
+        props.dates.forEach((date) => {
+            if (!existingDates.includes(date)) {
+                const newActivity: IEActivity = {
+                    date,
+                    value: 0,
+                };
+                filteredActivities.push(newActivity);
+            }
+        });
+
+        // convert them to propy boys
+        const acts: IECheckboxProps[] = filteredActivities.map(
+            (a: IEActivity) => {
+                const checkBoxProps: IECheckboxProps = {
+                    date: a.date,
+                    value: a.value,
+                    state: CheckboxStateFromInt(a.value),
+                    locked:
+                        (props.lockPast && a.date < getTodayMidday()) ||
+                        (props.lockFuture && a.date > getTodayMidday()),
+                    onClick() {
+                        console.log("unimplemented at the mo");
+                    },
+                };
+                return checkBoxProps;
+            },
+        );
+
+        setCheckboxProps(
+            acts.sort((activityA, activityB) => {
+                return activityA.date - activityB.date;
+            }),
+        );
+    }, [props.activities, props.dates]);
+
+    if (checkboxProps.length == 0) {
+        return <>...</>;
+    }
+
+    return (
+        <>
+            {checkboxProps.map((activity) => (
+                <ECheckbox {...activity} key={activity.date} />
+            ))}
         </>
     );
 }
