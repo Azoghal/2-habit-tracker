@@ -123,7 +123,7 @@ export class ExperimentsClient {
         const habitRef = doc(db, habit_path);
         const activitiesDoc = await getDoc(habitRef);
         if (!activitiesDoc.exists()) {
-            throw "activities does not exist";
+            throw "habit does not exist";
         }
 
         // TODO rip out into helper?
@@ -142,6 +142,28 @@ export class ExperimentsClient {
             };
             return activity;
         });
+    }
+
+    async setActivities(
+        habit_path: string,
+        date: number,
+        value: number,
+    ): Promise<IEActivity[]> {
+        const habitRef = doc(db, habit_path);
+        const activitiesDoc = await getDoc(habitRef);
+        if (!activitiesDoc.exists) {
+            throw "habit does not exist";
+        }
+
+        const data = activitiesDoc.data();
+        const activities: { [key: number]: number } = data.activities || {}; // Initialize as object
+
+        activities[date] = value; // Directly assign to the object
+
+        const newDoc = { ...data, activities };
+        await setDoc(habitRef, newDoc); // Use await here
+
+        return [];
     }
 
     async getFullUserDoc2(user_id: string): Promise<IEUserWithCategories> {
