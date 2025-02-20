@@ -49,25 +49,25 @@ export default function ERow(props: IEHabitProps) {
                 });
 
             // TODo remove the below, should be able to do this more easily
-            // setActivities((oldActivities) => {
-            //     let foundIt = false;
-            //     let newActivities = oldActivities.map((v) => {
-            //         console.log(date, v.date, date == v.date);
-            //         if (v.date == date) {
-            //             foundIt = true;
-            //             return { ...v, value: newValue };
-            //         } else {
-            //             return v;
-            //         }
-            //     });
-            //     if (!foundIt) {
-            //         newActivities = oldActivities.concat({
-            //             date: date,
-            //             value: newValue,
-            //         });
-            //     }
-            //     return newActivities;
-            // });
+            setActivities((oldActivities) => {
+                let foundIt = false;
+                let newActivities = oldActivities.map((v) => {
+                    console.log(date, v.date, date == v.date);
+                    if (v.date == date) {
+                        foundIt = true;
+                        return { ...v, value: newValue };
+                    } else {
+                        return v;
+                    }
+                });
+                if (!foundIt) {
+                    newActivities = oldActivities.concat({
+                        date: date,
+                        value: newValue,
+                    });
+                }
+                return newActivities;
+            });
         },
         [setActivities],
     );
