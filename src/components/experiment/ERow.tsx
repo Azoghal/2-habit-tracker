@@ -37,6 +37,36 @@ export default function ERow(props: IEHabitProps) {
         loadData();
     }, [loadData]);
 
+    const updateCheckbox = useCallback(
+        (date: number, newValue: number) => {
+            console.log("trying to update ", date, newValue);
+
+            // TODO use newExperiments(). to actually do db write
+
+            // TODo remove the below, should be able to do this more easily
+            setActivities((oldActivities) => {
+                let foundIt = false;
+                let newActivities = oldActivities.map((v) => {
+                    console.log(date, v.date, date == v.date);
+                    if (v.date == date) {
+                        foundIt = true;
+                        return { ...v, value: newValue };
+                    } else {
+                        return v;
+                    }
+                });
+                if (!foundIt) {
+                    newActivities = oldActivities.concat({
+                        date: date,
+                        value: newValue,
+                    });
+                }
+                return newActivities;
+            });
+        },
+        [setActivities],
+    );
+
     return (
         <>
             <div className="row">
@@ -46,6 +76,7 @@ export default function ERow(props: IEHabitProps) {
                     dates={props.dates}
                     lockFuture={props.futureLocked}
                     lockPast={props.pastLocked}
+                    updateCheckbox={updateCheckbox}
                 ></EDateFilledRow>
             </div>
         </>
@@ -57,10 +88,13 @@ interface IEDateFilledRowProps {
     dates: number[];
     lockPast: boolean;
     lockFuture: boolean;
+    updateCheckbox(date: number, newValue: number): void;
 }
 
 function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
     const [checkboxProps, setCheckboxProps] = useState<IECheckboxProps[]>([]);
+
+    console.log("rerender edate filled row");
 
     useEffect(() => {
         const activities = props.activities;
@@ -97,7 +131,7 @@ function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
                         (props.lockPast && a.date < getTodayMidday()) ||
                         (props.lockFuture && a.date > getTodayMidday()),
                     onClick() {
-                        console.log("unimplemented at the mo");
+                        props.updateCheckbox(a.date, (a.value + 1) % 3);
                     },
                 };
                 return checkBoxProps;
@@ -109,7 +143,14 @@ function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
                 return activityA.date - activityB.date;
             }),
         );
-    }, [props.activities, props.dates]);
+    }, [
+        props,
+        props.activities,
+        props.dates,
+        props.lockFuture,
+        props.lockPast,
+        setCheckboxProps,
+    ]);
 
     if (checkboxProps.length == 0) {
         return <>...</>;
