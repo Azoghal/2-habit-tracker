@@ -1,6 +1,5 @@
 import { doc, getDoc, setDoc } from "@firebase/firestore";
 import { db } from "../firebase";
-import { CreateHabitsResult, newHabitsClient } from "./habits";
 import { IHabits } from "../types/habits";
 import { P_HABIT_USERS } from "./schema";
 
@@ -52,18 +51,20 @@ export class UserClient {
 
     // if the user id does not already exist, create a habits doc, a habitsuser doc associating it
     async createHabitsUser(user_id: string): Promise<CreateHabitsUserResult> {
-        const habitsRes: CreateHabitsResult =
-            await newHabitsClient().createHabits("Your habits");
-        const user: IUser = await this.createUser({
-            display_name: "New User",
-            user_id,
-            habits_id: habitsRes.id,
-        });
+        console.log("unimplimented", user_id);
+        throw "not implimented";
+        // const habitsRes: CreateHabitsResult =
+        //     await newHabitsClient().createHabits("Your habits");
+        // const user: IUser = await this.createUser({
+        //     display_name: "New User",
+        //     user_id,
+        //     habits_id: habitsRes.id,
+        // });
 
-        return {
-            user: user,
-            habits: habitsRes,
-        };
+        // return {
+        //     user: user,
+        //     habits: habitsRes,
+        // };
     }
 }
 
