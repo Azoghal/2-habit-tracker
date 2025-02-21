@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import Signin from "./pages/Signin";
 import UserAuthLayout from "./routing/UserAuthLayout";
 import "./sass/main.scss";
+import TablePage from "./pages/TablePage";
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                         <Route path="/" element={<Signin />} />
                         <Route path="/" element={<UserAuthLayout />}>
                             <Route path="/landing" element={<Landing />} />
+                            <Route path="/table" element={<TablePage />} />
                         </Route>
                     </Routes>
                 </section>
