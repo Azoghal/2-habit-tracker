@@ -1,11 +1,6 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { EBox } from "./EBox";
-
-export enum ECheckboxState {
-    Empty = 0,
-    Half = 1,
-    Full = 2,
-}
+import { ECheckboxState } from "../../types/types";
 
 export function CheckboxStateFromInt(s: number): ECheckboxState {
     switch (s) {
@@ -43,11 +38,14 @@ export interface IECheckboxProps {
 // }
 
 export function ECheckbox(props: IECheckboxProps) {
+    const [state, setState] = useState(props.value);
+
     const onLocalClick = useCallback(() => {
         if (!props.locked) {
+            setState((state + 1) % 3);
             props.onClick();
         }
-    }, [props]);
+    }, [props, state]);
 
     return (
         <div
@@ -55,7 +53,7 @@ export function ECheckbox(props: IECheckboxProps) {
             onClick={onLocalClick}
         >
             <label className="checkbox-inner">
-                <EBox state={props.value} />
+                <EBox state={state} />
             </label>
         </div>
     );

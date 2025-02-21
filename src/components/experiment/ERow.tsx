@@ -19,7 +19,7 @@ export interface IEHabitProps {
 // and the locked bools
 // It will load the required ones, or create placeholders
 export default function ERow(props: IEHabitProps) {
-    const [activities, setActivities] = useState<IEActivity[]>([]);
+    const [activities, setActivities] = useState<IEActivity[]>();
 
     const loadData = useCallback(() => {
         newExperiments()
@@ -39,38 +39,18 @@ export default function ERow(props: IEHabitProps) {
 
     const updateCheckbox = useCallback(
         (date: number, newValue: number) => {
-            console.log("trying to update ", date, newValue);
-
-            // TODO use newExperiments(). to actually do db write
             newExperiments()
                 .setActivities(props.path, date, newValue)
                 .then(() => {
                     loadData();
                 });
-
-            // TODo remove the below, should be able to do this more easily
-            setActivities((oldActivities) => {
-                let foundIt = false;
-                let newActivities = oldActivities.map((v) => {
-                    console.log(date, v.date, date == v.date);
-                    if (v.date == date) {
-                        foundIt = true;
-                        return { ...v, value: newValue };
-                    } else {
-                        return v;
-                    }
-                });
-                if (!foundIt) {
-                    newActivities = oldActivities.concat({
-                        date: date,
-                        value: newValue,
-                    });
-                }
-                return newActivities;
-            });
         },
-        [setActivities],
+        [loadData, props.path],
     );
+
+    if (activities == undefined) {
+        return <>...</>;
+    }
 
     return (
         <>
@@ -97,7 +77,7 @@ interface IEDateFilledRowProps {
 }
 
 function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
-    const [checkboxProps, setCheckboxProps] = useState<IECheckboxProps[]>([]);
+    const [checkboxProps, setCheckboxProps] = useState<IECheckboxProps[]>();
 
     console.log("rerender edate filled row");
 
@@ -157,7 +137,7 @@ function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
         setCheckboxProps,
     ]);
 
-    if (checkboxProps.length == 0) {
+    if (checkboxProps == undefined || checkboxProps.length == 0) {
         return <>...</>;
     }
 

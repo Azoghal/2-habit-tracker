@@ -156,6 +156,9 @@ export class ExperimentsClient {
         }
 
         const data = activitiesDoc.data();
+        if (data == undefined) {
+            throw "habit has no data";
+        }
         const activities: { [key: number]: number } = data.activities || {}; // Initialize as object
 
         activities[date] = value; // Directly assign to the object
