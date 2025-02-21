@@ -21,22 +21,6 @@ export interface IECheckboxProps {
     onClick(): void;
 }
 
-// export interface CheckboxInfo{
-//   onClick():void;
-//   key: number // unix timestamp in seconds, should be 12:00pm UTC
-//   state: CheckboxState
-//   locked: boolean
-// }
-
-// function backToDate(epochSeconds: number): Date {
-//     const date = new Date(epochSeconds * 1000);
-//     return date;
-// }
-
-// function formatShortDate(date: Date): string {
-//     return date.toLocaleDateString("en-US", { day: "numeric", month: "short" });
-// }
-
 export function ECheckbox(props: IECheckboxProps) {
     const [state, setState] = useState(props.value);
 
@@ -58,6 +42,3 @@ export function ECheckbox(props: IECheckboxProps) {
         </div>
     );
 }
-
-// For styling https://blog.logrocket.com/styling-checkboxes-css-properties/
-// and refer to when we had it working with the angled fill

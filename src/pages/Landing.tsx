@@ -1,5 +1,5 @@
+import EHabitsTableMaster from "../components/experiment/EHabitsTableMaster";
 import { useUserAuth } from "../context/SessionHelpers";
-import HabitsTableMaster from "../components/HabitsTableMaster";
 
 function Landing(): JSX.Element {
     const user = useUserAuth();
@@ -8,7 +8,7 @@ function Landing(): JSX.Element {
         <>
             <h1>Firebase Demo - Recipes</h1>
             <h2>{user?.email}</h2>
-            {user ? <HabitsTableMaster user={user} /> : <>loading user</>}
+            {user ? <EHabitsTableMaster user={user} /> : <>loading user</>}
         </>
     );
 }

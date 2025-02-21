@@ -2,7 +2,6 @@ import { User } from "@firebase/auth";
 import { useCallback, useEffect, useState } from "react";
 import EHabits from "./EHabits";
 import { IUser, newUserClient as newUsersClient } from "../../clients/users";
-import { newExperiments } from "../../clients/experimentHabits";
 import EGetStarted from "./EGetStarted";
 import { P_EXPERIMENTS_USERS } from "../../clients/schema";
 
@@ -50,32 +49,8 @@ export default function EHabitsTableMaster(props: IHabitsTableMasterProps) {
         loadData();
     }, [loadData]);
 
-    const fetchExperimentUser = useCallback(() => {
-        if (userDoc) {
-            newExperiments().getFullUserDoc(userDoc?.user_id);
-        } else {
-            console.log("coulnd't fetch user");
-        }
-    }, [userDoc]);
-
-    const fetchExperimentUser2 = useCallback(() => {
-        if (userDoc) {
-            newExperiments().getFullUserDoc2(userDoc?.user_id);
-        } else {
-            console.log("coulnd't fetch user");
-        }
-    }, [userDoc]);
-
     return (
         <>
-            <div>
-                <button onClick={fetchExperimentUser}>
-                    fetch experiment user full
-                </button>
-                <button onClick={fetchExperimentUser2}>
-                    fetch experiment user 2
-                </button>
-            </div>
             {userDoc ? (
                 <EHabits
                     title={userDoc.display_name + "'s Habits"}
