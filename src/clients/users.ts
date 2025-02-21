@@ -1,6 +1,5 @@
 import { doc, getDoc, setDoc } from "@firebase/firestore";
 import { db } from "../firebase";
-import { IHabits } from "../types/habits";
 import { P_HABIT_USERS } from "./schema";
 
 // TODO whack all our models in here
@@ -13,7 +12,7 @@ export interface IUser {
 
 export interface CreateHabitsUserResult {
     user: IUser;
-    habits: IHabits;
+    // habits: ...
 }
 
 // Create separate client classes for each collection
@@ -53,18 +52,6 @@ export class UserClient {
     async createHabitsUser(user_id: string): Promise<CreateHabitsUserResult> {
         console.log("unimplimented", user_id);
         throw "not implimented";
-        // const habitsRes: CreateHabitsResult =
-        //     await newHabitsClient().createHabits("Your habits");
-        // const user: IUser = await this.createUser({
-        //     display_name: "New User",
-        //     user_id,
-        //     habits_id: habitsRes.id,
-        // });
-
-        // return {
-        //     user: user,
-        //     habits: habitsRes,
-        // };
     }
 }
 
