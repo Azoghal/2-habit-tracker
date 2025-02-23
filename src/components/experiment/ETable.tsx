@@ -1,7 +1,8 @@
 // a row of checkboxes
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ECategory from "./ECategory";
 import { IECategory, newExperiments } from "../../clients/experimentHabits";
+import { DaysOfWeekShort, getDayOfWeek } from "./helpers";
 
 export interface IETableProps {
     title: string;
@@ -14,6 +15,18 @@ export interface IETableProps {
 export default function ETable(props: IETableProps) {
     const [newCategoryTitle, setNewCategoryTitle] = useState<string>("");
     const [categories, setCategories] = useState<IECategory[]>([]);
+
+    const calculateHeaders = useMemo(() => {
+        const headers: JSX.Element[] = [];
+        props.dates.forEach((t) => {
+            const dow = getDayOfWeek(t);
+            if (dow == 0) {
+                headers.push(<th key={"wb" + t}> | </th>); // Add a blank column to indicate week beginning
+            }
+            headers.push(<th key={t}>{DaysOfWeekShort[dow]}</th>);
+        });
+        return headers;
+    }, [props.dates]);
 
     const loadData = useCallback(() => {
         // TODO set Categories
@@ -55,32 +68,46 @@ export default function ETable(props: IETableProps) {
     }, [loadData]);
 
     return (
-        <div className="table">
-            <span>{props.title}</span>
-            {categories.map((category) => {
-                return (
-                    <ECategory
-                        title={category.name}
-                        path={props.path + category.path}
-                        lockFuture={props.lockFuture}
-                        lockPast={props.lockPast}
-                        key={category.name}
-                        dates={props.dates}
-                    />
-                );
-            })}
-            <div className="new-category">
-                <button className="c-btn" onClick={handleNewCategorySubmit}>
-                    +
-                </button>
-                <input
-                    className="input new-category-input"
-                    type="text"
-                    placeholder="New Category"
-                    value={newCategoryTitle}
-                    onChange={(e) => setNewCategoryTitle(e.target.value)}
-                />
-            </div>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>{props.title}</th>
+                    {calculateHeaders}
+                </tr>
+            </thead>
+            <tbody>
+                {categories.map((category) => {
+                    return (
+                        <ECategory
+                            title={category.name}
+                            path={props.path + category.path}
+                            lockFuture={props.lockFuture}
+                            lockPast={props.lockPast}
+                            key={category.name}
+                            dates={props.dates}
+                        />
+                    );
+                })}
+                <tr>
+                    <td>
+                        <button
+                            className="c-btn"
+                            onClick={handleNewCategorySubmit}
+                        >
+                            +
+                        </button>
+                        <input
+                            className="input new-category-input"
+                            type="text"
+                            placeholder="New Category"
+                            value={newCategoryTitle}
+                            onChange={(e) =>
+                                setNewCategoryTitle(e.target.value)
+                            }
+                        />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     );
 }
