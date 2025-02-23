@@ -1,8 +1,9 @@
 // a row of checkboxes
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CheckboxStateFromInt, ECheckbox, IECheckboxProps } from "./ECheckbox";
 import { IEActivity, newExperiments } from "../../clients/experimentHabits";
 import { getTodayMidday } from "./EHabits";
+import { getDayOfWeek } from "./helpers";
 
 export interface IEHabitProps {
     title: string;
@@ -49,27 +50,28 @@ export default function ERow(props: IEHabitProps) {
     );
 
     if (activities == undefined) {
-        return <>...</>;
+        return (
+            <tr>
+                <td>...</td>
+            </tr>
+        );
     }
 
     return (
-        <>
-            <div className="row">
-                <span className="row-title">{props.title}</span>
-                <EDateFilledRow
-                    activities={activities}
-                    dates={props.dates}
-                    lockFuture={props.futureLocked}
-                    lockPast={props.pastLocked}
-                    updateCheckbox={updateCheckbox}
-                ></EDateFilledRow>
-            </div>
-        </>
+        <EDateFilledRow
+            activities={activities}
+            title={props.title}
+            dates={props.dates}
+            lockFuture={props.futureLocked}
+            lockPast={props.pastLocked}
+            updateCheckbox={updateCheckbox}
+        ></EDateFilledRow>
     );
 }
 
 interface IEDateFilledRowProps {
     activities: IEActivity[];
+    title: string;
     dates: number[];
     lockPast: boolean;
     lockFuture: boolean;
@@ -137,15 +139,28 @@ function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
         setCheckboxProps,
     ]);
 
-    if (checkboxProps == undefined || checkboxProps.length == 0) {
-        return <>...</>;
-    }
+    const rowBoxes = useMemo(() => {
+        const r: JSX.Element[] = [];
+        if (checkboxProps == undefined) {
+            return r;
+        }
+        checkboxProps.forEach((activity) => {
+            if (getDayOfWeek(activity.date) == 0) {
+                r.push(<td key={"wb" + activity.date} />);
+            }
+            r.push(
+                <td key={activity.date}>
+                    <ECheckbox {...activity} />
+                </td>,
+            );
+        });
+        return r;
+    }, [checkboxProps]);
 
     return (
-        <>
-            {checkboxProps.map((activity) => (
-                <ECheckbox {...activity} key={activity.date} />
-            ))}
-        </>
+        <tr>
+            <td className="row-title">{props.title}</td>
+            {rowBoxes}
+        </tr>
     );
 }

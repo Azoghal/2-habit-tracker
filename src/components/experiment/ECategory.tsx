@@ -69,21 +69,26 @@ export default function ECategory(props: IECategoryProps) {
 
     return (
         <>
-            <div className="category">
-                <span className="category-title">{props.title}</span>
-                {habits.map((habit) => {
-                    return (
-                        <ERow
-                            title={habit.name}
-                            path={habit.path}
-                            key={habit.name}
-                            futureLocked={props.lockFuture}
-                            pastLocked={props.lockPast}
-                            dates={props.dates}
-                        />
-                    );
-                })}
-                <div className="new-habit">
+            <tr>
+                <td>
+                    {/* <span className="category-title">{props.title}</span> */}
+                    {props.title}
+                </td>
+            </tr>
+            {habits.map((habit) => {
+                return (
+                    <ERow
+                        title={habit.name}
+                        path={habit.path}
+                        key={habit.name}
+                        futureLocked={props.lockFuture}
+                        pastLocked={props.lockPast}
+                        dates={props.dates}
+                    />
+                );
+            })}
+            <tr className="new-habit">
+                <td>
                     <button className="c-btn" onClick={handleNewHabitSubmit}>
                         +
                     </button>
@@ -94,8 +99,8 @@ export default function ECategory(props: IECategoryProps) {
                         value={newHabitTitle}
                         onChange={(e) => setNewHabitTitle(e.target.value)}
                     />
-                </div>
-            </div>
+                </td>
+            </tr>
         </>
     );
 }
