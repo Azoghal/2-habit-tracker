@@ -32,12 +32,9 @@ export function ECheckbox(props: IECheckboxProps) {
     }, [props, state]);
 
     return (
-        <div
-            className={`checkbox-container ${props.locked ? "checkbox-container__locked" : ""}`}
-            onClick={onLocalClick}
-        >
+        <div onClick={onLocalClick}>
             <label className="checkbox-inner">
-                <EBox state={state} />
+                <EBox locked={props.locked} state={state} />
             </label>
         </div>
     );

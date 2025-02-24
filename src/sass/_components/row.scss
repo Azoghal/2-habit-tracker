@@ -12,7 +12,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     justify-content: right;
-    // display: flex;
+    display: flex;
     margin: 0 32px 0 0;
 }
 
@@ -29,8 +29,17 @@
     border-collapse: collapse;
 }
 
+.c-table tr:first-child th:first-of-type {
+    border-radius: 0 15px 0 0;
+}
+
+.c-table tr:last-child td:first-child {
+    border-radius: 0 0px 15px 0;
+}
+
 .c-table th:first-child,
 .c-table td:first-child {
     width: $title-bar-width;
     background-color: $pre-primary-colour;
+    box-shadow: 3px 0px 0px hsla(170, 50%, 10%, 0.15);
 }

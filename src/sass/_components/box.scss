@@ -9,7 +9,12 @@
 .box-box {
     // line-height:0;
     width: 0;
-    border-radius: 3px;
+    // border: 1px;
+    border-radius: 2px;
+
+    &__locked {
+        background-color: $post-primary-colour;
+    }
 
     &__empty {
         border-top: $checkbox-width solid transparent;
