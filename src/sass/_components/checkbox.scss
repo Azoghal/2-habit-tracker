@@ -1,7 +1,7 @@
 @use "../_vars/colours" as *;
 @use "../_vars/variables" as *;
 .checkbox-container {
-    // line-height:0;
+    line-height: 0;
     width: 24px;
     display: flex;
     align-items: center;

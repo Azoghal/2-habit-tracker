@@ -3,11 +3,13 @@
 
 .box-box-container {
     border: 1px solid $checkbox-border-colour;
+    border-radius: 3px;
 }
 
 .box-box {
     // line-height:0;
     width: 0;
+    border-radius: 3px;
 
     &__empty {
         border-top: $checkbox-width solid transparent;
@@ -20,7 +22,10 @@
     }
 
     &__full {
-        border-top: $checkbox-width solid $checkbox-fill;
-        border-right: $checkbox-width solid $checkbox-fill;
+        width: $checkbox-width;
+        height: $checkbox-width;
+        background-color: $checkbox-fill;
+        // border-top: $checkbox-width solid $checkbox-fill;
+        // border-right: $checkbox-width solid $checkbox-fill;
     }
 }

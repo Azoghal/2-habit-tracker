@@ -9,7 +9,7 @@
 // }
 
 .category-title {
-    width: 150px;
+    // width: $title-bar-width;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -21,13 +21,13 @@
 }
 
 .new-habit {
-    width: 150px;
+    // width: $title-bar-width;
     display: flex;
-    justify-content: right;
+    // justify-content: right;
 }
 
 .new-habit-input {
     flex: 1;
-    min-width: 80px;
-    max-width: 110px;
+    min-width: 60px;
+    max-width: 100px;
 }

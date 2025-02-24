@@ -68,7 +68,7 @@ export default function ETable(props: IETableProps) {
     }, [loadData]);
 
     return (
-        <table>
+        <table className="c-table">
             <thead>
                 <tr>
                     <th>{props.title}</th>

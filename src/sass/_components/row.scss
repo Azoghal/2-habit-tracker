@@ -1,14 +1,36 @@
+@use "../_vars/colours" as *;
+@use "../_vars/variables" as *;
+
 .row {
-    display: flex;
-    flex-direction: row;
+    // display: flex;
+    // flex-direction: row;
 }
 
 .row-title {
-    width: 150px;
+    width: $title-bar-width;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     justify-content: right;
-    display: flex;
+    // display: flex;
     margin: 0 32px 0 0;
+}
+
+.c_first_column {
+    background-color: $pre-primary-colour;
+    // box-shadow:
+    //     0 2px 2px hsla(var(--hue), 50%, 10%, 0.3),
+    //     0 4px 4px hsla(var(--hue), 50%, 10%, 0.15);
+}
+
+// todo move to table file
+
+.c-table {
+    border-collapse: collapse;
+}
+
+.c-table th:first-child,
+.c-table td:first-child {
+    width: $title-bar-width;
+    background-color: $pre-primary-colour;
 }
