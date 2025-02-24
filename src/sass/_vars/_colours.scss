@@ -1,17 +1,23 @@
-$darkest-grey: #202020;
-$dark-grey: #383838;
-$grey: #434343;
-$off-grey: #505050;
-$light-grey: #545454;
-$lightest-grey: #565656;
-$white: #ffffff;
-$black: #000000;
-$green: #004e07;
-$light-green: #006909;
+$off-grey: #505050; // todo replace with darker version of secondary
 
-$checkbox-fill: $darkest-grey;
-$checkbox-border-colour: $dark-grey;
+// light
+$post-primary-colour: hsl(170, 30%, 70%);
+$primary-colour: hsl(170, 50%, 90%);
+$pre-primary-color: hsl(170, 50%, 95%);
+$secondary-colour: hsl(170, 50%, 10%);
+$tertiary-colour: hsl(230, 80%, 20%);
+// $accent-colour: hsl(110, 80%, 20%);
+$accent-colour: hsl(230, 80%, 20%); // same as tertiary because i didnt like it
 
-$body-bg: $lightest-grey;
-$body-colour: $white;
-$anchor-colour: $green;
+// dark
+$dark-primary-colour: hsl(170, 50%, 10%);
+$dark-secondary-colour: hsl(170, 50%, 90%);
+$dark-tertiary-colour: hsl(230, 80%, 80%);
+$dark-accent-colour: hsl(110, 80%, 80%);
+
+$checkbox-fill: $accent-colour;
+$checkbox-border-colour: $post-primary-colour;
+
+$body-bg: $primary-colour;
+$body-colour: $secondary-colour;
+$anchor-colour: $tertiary-colour;
