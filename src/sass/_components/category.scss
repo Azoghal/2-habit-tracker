@@ -9,25 +9,26 @@
 // }
 
 .category-title {
-    width: 150px;
+    // width: $title-bar-width;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     justify-content: right;
     display: flex;
-    margin: 0 32px 0 0;
+    // margin: 0 32px 0 0;
+    padding-right: 10px;
     font-size: $category-title-size;
     font-weight: $font-weight-bold;
 }
 
 .new-habit {
-    width: 150px;
+    // width: $title-bar-width;
     display: flex;
-    justify-content: right;
+    // justify-content: right;
 }
 
 .new-habit-input {
     flex: 1;
-    min-width: 80px;
-    max-width: 110px;
+    min-width: 60px;
+    max-width: 100px;
 }

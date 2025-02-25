@@ -70,7 +70,7 @@ export default function ECategory(props: IECategoryProps) {
     return (
         <>
             <tr>
-                <td>
+                <td className="category-title">
                     {/* <span className="category-title">{props.title}</span> */}
                     {props.title}
                 </td>

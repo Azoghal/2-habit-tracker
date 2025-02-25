@@ -1,5 +1,7 @@
+@use "../_vars/variables" as *;
+
 .new-category {
-    width: 150px;
+    // width: $title-bar-width;
     display: flex;
     justify-content: right;
 }

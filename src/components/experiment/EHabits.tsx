@@ -45,10 +45,10 @@ export default function EHabits(props: IEHabitsProps) {
 
     return (
         <>
-            <button className="" onClick={toggleLockPast}>
+            <button className="c-btn" onClick={toggleLockPast}>
                 {lockPast ? "🔒" : "🔓"} Past
             </button>
-            <button onClick={toggleLockFuture}>
+            <button className="c-btn" onClick={toggleLockFuture}>
                 {lockFuture ? "🔒" : "🔓"} Future
             </button>
             {

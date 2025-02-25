@@ -1,18 +1,18 @@
 @use "../_vars/colours" as *;
 
 .input {
-    background-color: $grey;
-    color: $white;
+    background-color: $primary-colour;
+    color: $secondary-colour;
     box-shadow: none;
     border: 1px solid;
     border-radius: 5px;
-    border-color: $light-grey;
+    border-color: $accent-colour;
 }
 
 .c-btn {
-    background-color: $grey;
+    background-color: $primary-colour;
     border-radius: 5px;
-    color: $white;
+    color: $secondary-colour;
     border: 1px solid;
-    border-color: $light-grey;
+    border-color: $tertiary-colour;
 }
