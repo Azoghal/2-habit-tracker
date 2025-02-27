@@ -6,9 +6,6 @@ export interface IECategoryProps {
     title: string;
     path: string;
     // habits: IHabit[];
-    // TODO move the global table settings into a context?
-    lockFuture: boolean;
-    lockPast: boolean;
     dates: number[];
 }
 
@@ -81,8 +78,6 @@ export default function ECategory(props: IECategoryProps) {
                         title={habit.name}
                         path={habit.path}
                         key={habit.name}
-                        futureLocked={props.lockFuture}
-                        pastLocked={props.lockPast}
                         dates={props.dates}
                     />
                 );

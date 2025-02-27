@@ -4,6 +4,7 @@ import EHabits from "./EHabits";
 import { IUser, newUserClient as newUsersClient } from "../../clients/users";
 import EGetStarted from "./EGetStarted";
 import { P_EXPERIMENTS_USERS } from "../../clients/schema";
+import { TableSettingsProvider } from "../../context/TableSettings";
 
 export interface IHabitsTableMasterProps {
     // habitsDoc: IHabits,
@@ -52,10 +53,18 @@ export default function EHabitsTableMaster(props: IHabitsTableMasterProps) {
     return (
         <>
             {userDoc ? (
-                <EHabits
-                    title={userDoc.display_name + "'s Habits"}
-                    path={P_EXPERIMENTS_USERS + "/" + userDoc?.user_id}
-                />
+                <TableSettingsProvider
+                    initialSettings={{
+                        lockFuture: true,
+                        lockPast: false,
+                        lockHeaders: true,
+                    }}
+                >
+                    <EHabits
+                        title={userDoc.display_name + "'s Habits"}
+                        path={P_EXPERIMENTS_USERS + "/" + userDoc?.user_id}
+                    />
+                </TableSettingsProvider>
             ) : needToStart ? (
                 <EGetStarted onClick={() => getStarted(props.user.uid)} />
             ) : (

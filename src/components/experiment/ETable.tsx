@@ -3,18 +3,19 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import ECategory from "./ECategory";
 import { IECategory, newExperiments } from "../../clients/experimentHabits";
 import { DaysOfWeekShort, getDayOfWeek } from "./helpers";
+import { useTableSettings } from "../../context/TableSettings";
+import LockButton from "../LockButton";
 
 export interface IETableProps {
     title: string;
     path: string;
-    lockPast: boolean;
-    lockFuture: boolean;
     dates: number[];
 }
 
 export default function ETable(props: IETableProps) {
     const [newCategoryTitle, setNewCategoryTitle] = useState<string>("");
     const [categories, setCategories] = useState<IECategory[]>([]);
+    const { today, lockHeaders, setLockHeaders } = useTableSettings();
 
     const calculateHeaders = useMemo(() => {
         const headers: JSX.Element[] = [];
@@ -23,10 +24,15 @@ export default function ETable(props: IETableProps) {
             if (dow == 0) {
                 headers.push(<th key={"wb" + t}> | </th>); // Add a blank column to indicate week beginning
             }
-            headers.push(<th key={t}>{DaysOfWeekShort[dow]}</th>);
+
+            headers.push(
+                <th className={`${t == today ? "c-th-today" : ""}`} key={t}>
+                    {DaysOfWeekShort[dow]}
+                </th>,
+            );
         });
         return headers;
-    }, [props.dates]);
+    }, [props.dates, today]);
 
     const loadData = useCallback(() => {
         // TODO set Categories
@@ -71,7 +77,13 @@ export default function ETable(props: IETableProps) {
         <table className="c-table">
             <thead>
                 <tr>
-                    <th>{props.title}</th>
+                    <th>
+                        {props.title}
+                        <LockButton
+                            locked={lockHeaders}
+                            onToggle={() => setLockHeaders(!lockHeaders)}
+                        />
+                    </th>
                     {calculateHeaders}
                 </tr>
             </thead>
@@ -81,8 +93,6 @@ export default function ETable(props: IETableProps) {
                         <ECategory
                             title={category.name}
                             path={props.path + category.path}
-                            lockFuture={props.lockFuture}
-                            lockPast={props.lockPast}
                             key={category.name}
                             dates={props.dates}
                         />

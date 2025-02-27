@@ -4,13 +4,11 @@ import { CheckboxStateFromInt, ECheckbox, IECheckboxProps } from "./ECheckbox";
 import { IEActivity, newExperiments } from "../../clients/experimentHabits";
 import { getTodayMidday } from "./EHabits";
 import { getDayOfWeek } from "./helpers";
+import { useTableSettings } from "../../context/TableSettings";
 
 export interface IEHabitProps {
     title: string;
     path: string;
-    futureLocked: boolean;
-    pastLocked: boolean;
-    //TODO move into a table settings context?
     dates: number[];
 }
 
@@ -62,8 +60,6 @@ export default function ERow(props: IEHabitProps) {
             activities={activities}
             title={props.title}
             dates={props.dates}
-            lockFuture={props.futureLocked}
-            lockPast={props.pastLocked}
             updateCheckbox={updateCheckbox}
         ></EDateFilledRow>
     );
@@ -73,13 +69,12 @@ interface IEDateFilledRowProps {
     activities: IEActivity[];
     title: string;
     dates: number[];
-    lockPast: boolean;
-    lockFuture: boolean;
     updateCheckbox(date: number, newValue: number): void;
 }
 
 function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
     const [checkboxProps, setCheckboxProps] = useState<IECheckboxProps[]>();
+    const { lockPast, lockFuture } = useTableSettings();
 
     console.log("rerender edate filled row");
 
@@ -115,8 +110,8 @@ function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
                     value: a.value,
                     state: CheckboxStateFromInt(a.value),
                     locked:
-                        (props.lockPast && a.date < getTodayMidday()) ||
-                        (props.lockFuture && a.date > getTodayMidday()),
+                        (lockPast && a.date < getTodayMidday()) ||
+                        (lockFuture && a.date > getTodayMidday()),
                     onClick() {
                         props.updateCheckbox(a.date, (a.value + 1) % 3);
                     },
@@ -134,8 +129,8 @@ function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
         props,
         props.activities,
         props.dates,
-        props.lockFuture,
-        props.lockPast,
+        lockFuture,
+        lockPast,
         setCheckboxProps,
     ]);
 
