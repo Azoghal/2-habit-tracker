@@ -26,7 +26,10 @@ export default function ETable(props: IETableProps) {
             }
 
             headers.push(
-                <th className={`${t == today ? "c-th-today" : ""}`} key={t}>
+                <th
+                    className={`${t == today ? "c-th-today" : "c-th-some-day"}`}
+                    key={t}
+                >
                     {DaysOfWeekShort[dow]}
                 </th>,
             );
@@ -77,12 +80,15 @@ export default function ETable(props: IETableProps) {
         <table className="c-table">
             <thead>
                 <tr>
-                    <th>
-                        {props.title}
+                    <th className="c-table-title">{props.title}</th>
+                </tr>
+                <tr>
+                    <th className="c-table-subtitle">
                         <LockButton
                             locked={lockHeaders}
                             onToggle={() => setLockHeaders(!lockHeaders)}
                         />
+                        &nbsp;
                     </th>
                     {calculateHeaders}
                 </tr>
