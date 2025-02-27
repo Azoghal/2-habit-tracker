@@ -9,6 +9,7 @@ export interface IECategoryProps {
     // habits: IHabit[];
     dates: number[];
     allowDelete: boolean;
+    onDelete(): void;
 }
 
 export default function ECategory(props: IECategoryProps) {
@@ -52,13 +53,16 @@ export default function ECategory(props: IECategoryProps) {
         setNewHabitTitle(""); // Clear the input field
     };
 
-    const handleDelete = useCallback(() => {
-        if (habits.length > 0) {
-            console.log("not deleting because you still have habits");
-            return;
-        }
-        console.log("Deleting as have 0 habits");
-    }, [habits]);
+    const handleHabitDelete = useCallback((path: string) => {
+        newExperiments()
+            .deleteHabit(path)
+            .catch((e) => {
+                console.log("failed to delete habit", e);
+            })
+            .finally(() => {
+                loadData();
+            });
+    }, []);
 
     useEffect(() => {
         loadData();
@@ -69,7 +73,7 @@ export default function ECategory(props: IECategoryProps) {
             <tr>
                 <td className="category-title">
                     {props.allowDelete && habits.length == 0 && (
-                        <BinButton onClick={handleDelete} />
+                        <BinButton onClick={props.onDelete} />
                     )}
                     {props.title}
                 </td>
@@ -82,6 +86,7 @@ export default function ECategory(props: IECategoryProps) {
                         key={habit.name}
                         dates={props.dates}
                         allowDelete={props.allowDelete}
+                        onDelete={() => handleHabitDelete(habit.path)}
                     />
                 );
             })}

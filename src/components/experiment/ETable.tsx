@@ -72,6 +72,17 @@ export default function ETable(props: IETableProps) {
         setNewCategoryTitle(""); // Clear the input field
     };
 
+    const handleDeleteCategory = useCallback((path: string) => {
+        newExperiments()
+            .deleteCategory(path)
+            .catch((e) => {
+                console.log("failed to delete category", e);
+            })
+            .finally(() => {
+                loadData();
+            });
+    }, []);
+
     useEffect(() => {
         loadData();
     }, [loadData]);
@@ -102,6 +113,11 @@ export default function ETable(props: IETableProps) {
                             key={category.name}
                             dates={props.dates}
                             allowDelete={!lockHeaders}
+                            onDelete={() => {
+                                handleDeleteCategory(
+                                    props.path + category.path,
+                                );
+                            }}
                         />
                     );
                 })}

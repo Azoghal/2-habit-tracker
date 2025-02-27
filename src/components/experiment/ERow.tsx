@@ -12,6 +12,7 @@ export interface IEHabitProps {
     path: string;
     dates: number[];
     allowDelete: boolean;
+    onDelete(): void;
 }
 
 // ERow is for a single activity.
@@ -49,10 +50,6 @@ export default function ERow(props: IEHabitProps) {
         [loadData, props.path],
     );
 
-    const handleDelete = useCallback(() => {
-        console.log("Calling delete stuff");
-    }, []);
-
     if (activities == undefined) {
         return (
             <tr>
@@ -68,7 +65,7 @@ export default function ERow(props: IEHabitProps) {
             dates={props.dates}
             updateCheckbox={updateCheckbox}
             allowDelete={props.allowDelete}
-            onDelete={handleDelete}
+            onDelete={props.onDelete}
         ></EDateFilledRow>
     );
 }
