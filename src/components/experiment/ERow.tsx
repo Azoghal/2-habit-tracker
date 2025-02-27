@@ -5,11 +5,13 @@ import { IEActivity, newExperiments } from "../../clients/experimentHabits";
 import { getTodayMidday } from "./EHabits";
 import { getDayOfWeek } from "./helpers";
 import { useTableSettings } from "../../context/TableSettings";
+import BinButton from "../BinButton";
 
 export interface IEHabitProps {
     title: string;
     path: string;
     dates: number[];
+    allowDelete: boolean;
 }
 
 // ERow is for a single activity.
@@ -47,6 +49,10 @@ export default function ERow(props: IEHabitProps) {
         [loadData, props.path],
     );
 
+    const handleDelete = useCallback(() => {
+        console.log("Calling delete stuff");
+    }, []);
+
     if (activities == undefined) {
         return (
             <tr>
@@ -61,6 +67,8 @@ export default function ERow(props: IEHabitProps) {
             title={props.title}
             dates={props.dates}
             updateCheckbox={updateCheckbox}
+            allowDelete={props.allowDelete}
+            onDelete={handleDelete}
         ></EDateFilledRow>
     );
 }
@@ -70,6 +78,8 @@ interface IEDateFilledRowProps {
     title: string;
     dates: number[];
     updateCheckbox(date: number, newValue: number): void;
+    allowDelete: boolean;
+    onDelete(): void;
 }
 
 function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
@@ -154,7 +164,10 @@ function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
 
     return (
         <tr>
-            <td className="row-title">{props.title}</td>
+            <td className="row-title">
+                {props.allowDelete && <BinButton onClick={props.onDelete} />}
+                {props.title}
+            </td>
             {rowBoxes}
         </tr>
     );

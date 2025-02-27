@@ -101,6 +101,7 @@ export default function ETable(props: IETableProps) {
                             path={props.path + category.path}
                             key={category.name}
                             dates={props.dates}
+                            allowDelete={!lockHeaders}
                         />
                     );
                 })}

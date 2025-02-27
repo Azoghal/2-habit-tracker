@@ -1,24 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import ERow from "./ERow";
 import { IEHabit, newExperiments } from "../../clients/experimentHabits";
+import BinButton from "../BinButton";
 
 export interface IECategoryProps {
     title: string;
     path: string;
     // habits: IHabit[];
     dates: number[];
+    allowDelete: boolean;
 }
 
-// function shouldLock(
-//     today: number,
-//     date: number,
-//     lockFuture: boolean,
-//     lockPast: boolean,
-// ) {
-//     return (date < today && lockPast) || (date > today && lockFuture);
-// }
-
-// TODO add an input field and a button below the existing entries to allow adding a new habit
 export default function ECategory(props: IECategoryProps) {
     const [newHabitTitle, setNewHabitTitle] = useState<string>("");
     // const today = getTodayMidday();
@@ -60,6 +52,14 @@ export default function ECategory(props: IECategoryProps) {
         setNewHabitTitle(""); // Clear the input field
     };
 
+    const handleDelete = useCallback(() => {
+        if (habits.length > 0) {
+            console.log("not deleting because you still have habits");
+            return;
+        }
+        console.log("Deleting as have 0 habits");
+    }, [habits]);
+
     useEffect(() => {
         loadData();
     }, [loadData]);
@@ -68,7 +68,9 @@ export default function ECategory(props: IECategoryProps) {
         <>
             <tr>
                 <td className="category-title">
-                    {/* <span className="category-title">{props.title}</span> */}
+                    {props.allowDelete && habits.length == 0 && (
+                        <BinButton onClick={handleDelete} />
+                    )}
                     {props.title}
                 </td>
             </tr>
@@ -79,6 +81,7 @@ export default function ECategory(props: IECategoryProps) {
                         path={habit.path}
                         key={habit.name}
                         dates={props.dates}
+                        allowDelete={props.allowDelete}
                     />
                 );
             })}
