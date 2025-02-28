@@ -4,6 +4,13 @@
 .box-box-container {
     border: 1px solid $checkbox-border-colour;
     border-radius: 3px;
+
+    &__add_symbol {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        line-height: 20px;
+    }
 }
 
 .box-box {

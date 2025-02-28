@@ -3,18 +3,19 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import ECategory from "./ECategory";
 import { IECategory, newExperiments } from "../../clients/experimentHabits";
 import { DaysOfWeekShort, getDayOfWeek } from "./helpers";
+import { useTableSettings } from "../../context/TableSettings";
+import LockButton from "../LockButton";
 
 export interface IETableProps {
     title: string;
     path: string;
-    lockPast: boolean;
-    lockFuture: boolean;
     dates: number[];
 }
 
 export default function ETable(props: IETableProps) {
     const [newCategoryTitle, setNewCategoryTitle] = useState<string>("");
     const [categories, setCategories] = useState<IECategory[]>([]);
+    const { today, lockHeaders, setLockHeaders } = useTableSettings();
 
     const calculateHeaders = useMemo(() => {
         const headers: JSX.Element[] = [];
@@ -23,10 +24,18 @@ export default function ETable(props: IETableProps) {
             if (dow == 0) {
                 headers.push(<th key={"wb" + t}> | </th>); // Add a blank column to indicate week beginning
             }
-            headers.push(<th key={t}>{DaysOfWeekShort[dow]}</th>);
+
+            headers.push(
+                <th
+                    className={`${t == today ? "c-th-today" : "c-th-some-day"}`}
+                    key={t}
+                >
+                    {DaysOfWeekShort[dow]}
+                </th>,
+            );
         });
         return headers;
-    }, [props.dates]);
+    }, [props.dates, today]);
 
     const loadData = useCallback(() => {
         // TODO set Categories
@@ -63,6 +72,17 @@ export default function ETable(props: IETableProps) {
         setNewCategoryTitle(""); // Clear the input field
     };
 
+    const handleDeleteCategory = useCallback((path: string) => {
+        newExperiments()
+            .deleteCategory(path)
+            .catch((e) => {
+                console.log("failed to delete category", e);
+            })
+            .finally(() => {
+                loadData();
+            });
+    }, []);
+
     useEffect(() => {
         loadData();
     }, [loadData]);
@@ -71,7 +91,16 @@ export default function ETable(props: IETableProps) {
         <table className="c-table">
             <thead>
                 <tr>
-                    <th>{props.title}</th>
+                    <th className="c-table-title">{props.title}</th>
+                </tr>
+                <tr>
+                    <th className="c-table-subtitle">
+                        <LockButton
+                            locked={lockHeaders}
+                            onToggle={() => setLockHeaders(!lockHeaders)}
+                        />
+                        &nbsp;
+                    </th>
                     {calculateHeaders}
                 </tr>
             </thead>
@@ -81,21 +110,22 @@ export default function ETable(props: IETableProps) {
                         <ECategory
                             title={category.name}
                             path={props.path + category.path}
-                            lockFuture={props.lockFuture}
-                            lockPast={props.lockPast}
                             key={category.name}
                             dates={props.dates}
+                            allowDelete={!lockHeaders}
+                            onDelete={() => {
+                                handleDeleteCategory(
+                                    props.path + category.path,
+                                );
+                            }}
                         />
                     );
                 })}
                 <tr>
+                    <td className="c-table-subtitle">&nbsp;</td>
+                </tr>
+                <tr>
                     <td>
-                        <button
-                            className="c-btn"
-                            onClick={handleNewCategorySubmit}
-                        >
-                            +
-                        </button>
                         <input
                             className="input new-category-input"
                             type="text"
@@ -105,6 +135,14 @@ export default function ETable(props: IETableProps) {
                                 setNewCategoryTitle(e.target.value)
                             }
                         />
+                    </td>
+                    <td>
+                        <div
+                            className="box-box-container box-box-container__add_symbol"
+                            onClick={handleNewCategorySubmit}
+                        >
+                            +
+                        </div>
                     </td>
                 </tr>
             </tbody>

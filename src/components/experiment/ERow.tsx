@@ -4,14 +4,15 @@ import { CheckboxStateFromInt, ECheckbox, IECheckboxProps } from "./ECheckbox";
 import { IEActivity, newExperiments } from "../../clients/experimentHabits";
 import { getTodayMidday } from "./EHabits";
 import { getDayOfWeek } from "./helpers";
+import { useTableSettings } from "../../context/TableSettings";
+import BinButton from "../BinButton";
 
 export interface IEHabitProps {
     title: string;
     path: string;
-    futureLocked: boolean;
-    pastLocked: boolean;
-    //TODO move into a table settings context?
     dates: number[];
+    allowDelete: boolean;
+    onDelete(): void;
 }
 
 // ERow is for a single activity.
@@ -62,9 +63,9 @@ export default function ERow(props: IEHabitProps) {
             activities={activities}
             title={props.title}
             dates={props.dates}
-            lockFuture={props.futureLocked}
-            lockPast={props.pastLocked}
             updateCheckbox={updateCheckbox}
+            allowDelete={props.allowDelete}
+            onDelete={props.onDelete}
         ></EDateFilledRow>
     );
 }
@@ -73,13 +74,14 @@ interface IEDateFilledRowProps {
     activities: IEActivity[];
     title: string;
     dates: number[];
-    lockPast: boolean;
-    lockFuture: boolean;
     updateCheckbox(date: number, newValue: number): void;
+    allowDelete: boolean;
+    onDelete(): void;
 }
 
 function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
     const [checkboxProps, setCheckboxProps] = useState<IECheckboxProps[]>();
+    const { lockPast, lockFuture } = useTableSettings();
 
     console.log("rerender edate filled row");
 
@@ -115,8 +117,8 @@ function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
                     value: a.value,
                     state: CheckboxStateFromInt(a.value),
                     locked:
-                        (props.lockPast && a.date < getTodayMidday()) ||
-                        (props.lockFuture && a.date > getTodayMidday()),
+                        (lockPast && a.date < getTodayMidday()) ||
+                        (lockFuture && a.date > getTodayMidday()),
                     onClick() {
                         props.updateCheckbox(a.date, (a.value + 1) % 3);
                     },
@@ -134,8 +136,8 @@ function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
         props,
         props.activities,
         props.dates,
-        props.lockFuture,
-        props.lockPast,
+        lockFuture,
+        lockPast,
         setCheckboxProps,
     ]);
 
@@ -159,7 +161,10 @@ function EDateFilledRow(props: IEDateFilledRowProps): JSX.Element {
 
     return (
         <tr>
-            <td className="row-title">{props.title}</td>
+            <td className="row-title">
+                {props.allowDelete && <BinButton onClick={props.onDelete} />}
+                {props.title}
+            </td>
             {rowBoxes}
         </tr>
     );

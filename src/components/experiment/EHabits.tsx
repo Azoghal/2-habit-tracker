@@ -1,5 +1,6 @@
-import { useCallback, useState } from "react";
 import ETable from "./ETable";
+import LockButton from "../LockButton";
+import { useTableSettings } from "../../context/TableSettings";
 
 export function getTodayMidday() {
     const now = new Date();
@@ -19,47 +20,26 @@ export const YEAR_MILLIS = 365 * DAY_SECONDS * 1000;
 // EHabits makes a table. I don;t think its necessary.
 // it just needs to get all the category names, create categories.
 export default function EHabits(props: IEHabitsProps) {
-    const [lockPast, setLockPast] = useState(false);
-    const [lockFuture, setLockFuture] = useState(true);
-
-    // TODO fix this so it does something again
-    const toggleLockPast = useCallback(() => {
-        setLockPast((prev) => !prev);
-    }, [setLockPast]);
-
-    const toggleLockFuture = useCallback(() => {
-        setLockFuture((prev) => !prev);
-    }, [setLockFuture]);
-
-    const getDates = useCallback(() => {
-        const today = getTodayMidday();
-        const start = today - 7 * DAY_SECONDS;
-        const end = today + 7 * DAY_SECONDS;
-
-        const middays: number[] = [];
-        for (let t = start; t <= end; t += DAY_SECONDS) {
-            middays.push(t);
-        }
-        return middays;
-    }, []);
+    const { days, lockPast, lockFuture, setLockPast, setLockFuture } =
+        useTableSettings();
 
     return (
         <>
-            <button className="c-btn" onClick={toggleLockPast}>
-                {lockPast ? "🔒" : "🔓"} Past
-            </button>
-            <button className="c-btn" onClick={toggleLockFuture}>
-                {lockFuture ? "🔒" : "🔓"} Future
-            </button>
-            {
-                <ETable
-                    title={props.title}
-                    path={props.path}
-                    lockFuture={lockFuture}
-                    lockPast={lockPast}
-                    dates={getDates()}
-                />
-            }
+            <LockButton
+                onToggle={() => {
+                    setLockPast(!lockPast);
+                }}
+                locked={lockPast}
+                buttonText=" Past"
+            />
+            <LockButton
+                onToggle={() => {
+                    setLockFuture(!lockFuture);
+                }}
+                locked={lockFuture}
+                buttonText=" Future"
+            />
+            <ETable title={props.title} path={props.path} dates={days} />
         </>
     );
 }

@@ -1,27 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import ERow from "./ERow";
 import { IEHabit, newExperiments } from "../../clients/experimentHabits";
+import BinButton from "../BinButton";
 
 export interface IECategoryProps {
     title: string;
     path: string;
     // habits: IHabit[];
-    // TODO move the global table settings into a context?
-    lockFuture: boolean;
-    lockPast: boolean;
     dates: number[];
+    allowDelete: boolean;
+    onDelete(): void;
 }
 
-// function shouldLock(
-//     today: number,
-//     date: number,
-//     lockFuture: boolean,
-//     lockPast: boolean,
-// ) {
-//     return (date < today && lockPast) || (date > today && lockFuture);
-// }
-
-// TODO add an input field and a button below the existing entries to allow adding a new habit
 export default function ECategory(props: IECategoryProps) {
     const [newHabitTitle, setNewHabitTitle] = useState<string>("");
     // const today = getTodayMidday();
@@ -63,6 +53,17 @@ export default function ECategory(props: IECategoryProps) {
         setNewHabitTitle(""); // Clear the input field
     };
 
+    const handleHabitDelete = useCallback((path: string) => {
+        newExperiments()
+            .deleteHabit(path)
+            .catch((e) => {
+                console.log("failed to delete habit", e);
+            })
+            .finally(() => {
+                loadData();
+            });
+    }, []);
+
     useEffect(() => {
         loadData();
     }, [loadData]);
@@ -71,7 +72,9 @@ export default function ECategory(props: IECategoryProps) {
         <>
             <tr>
                 <td className="category-title">
-                    {/* <span className="category-title">{props.title}</span> */}
+                    {props.allowDelete && habits.length == 0 && (
+                        <BinButton onClick={props.onDelete} />
+                    )}
                     {props.title}
                 </td>
             </tr>
@@ -81,17 +84,14 @@ export default function ECategory(props: IECategoryProps) {
                         title={habit.name}
                         path={habit.path}
                         key={habit.name}
-                        futureLocked={props.lockFuture}
-                        pastLocked={props.lockPast}
                         dates={props.dates}
+                        allowDelete={props.allowDelete}
+                        onDelete={() => handleHabitDelete(habit.path)}
                     />
                 );
             })}
             <tr className="new-habit">
-                <td>
-                    <button className="c-btn" onClick={handleNewHabitSubmit}>
-                        +
-                    </button>
+                <td className="c-table-subtitle">
                     <input
                         className="new-habit-input input "
                         type="text"
@@ -99,6 +99,15 @@ export default function ECategory(props: IECategoryProps) {
                         value={newHabitTitle}
                         onChange={(e) => setNewHabitTitle(e.target.value)}
                     />
+                    &nbsp;
+                </td>
+                <td>
+                    <div
+                        className="box-box-container box-box-container__add_symbol"
+                        onClick={handleNewHabitSubmit}
+                    >
+                        +
+                    </div>
                 </td>
             </tr>
         </>
