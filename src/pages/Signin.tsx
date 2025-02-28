@@ -31,7 +31,8 @@ function Signup(): JSX.Element {
 
     return (
         <>
-            <h1> Checkbox Demo </h1>
+            <h1> Habit Tracker </h1>
+            <p> Sign in </p>
             {errorMsg && <p>{errorMsg}</p>}
             <input
                 type="text"
