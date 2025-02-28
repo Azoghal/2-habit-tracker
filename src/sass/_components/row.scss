@@ -39,14 +39,23 @@
 }
 
 .c-table tr:last-child td:first-child {
-    // display: flex;
-    // justify-content: center;
+    display: flex;
+    justify-content: right;
     width: $title-bar-width;
     border-radius: 0 0px 15px 0;
 }
 
-.c-table th:first-child,
+.c-table th:first-child {
+    padding-right: 10px;
+    margin-right: 20px;
+    width: $title-bar-width;
+    background-color: $pre-primary-colour;
+    box-shadow: 3px 0px 0px hsla(170, 50%, 10%, 0.15);
+}
+
 .c-table td:first-child {
+    justify-content: right;
+
     padding-right: 10px;
     margin-right: 20px;
     width: $title-bar-width;

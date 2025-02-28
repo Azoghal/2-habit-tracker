@@ -122,13 +122,10 @@ export default function ETable(props: IETableProps) {
                     );
                 })}
                 <tr>
+                    <td className="c-table-subtitle">&nbsp;</td>
+                </tr>
+                <tr>
                     <td>
-                        <button
-                            className="c-btn"
-                            onClick={handleNewCategorySubmit}
-                        >
-                            +
-                        </button>
                         <input
                             className="input new-category-input"
                             type="text"
@@ -138,6 +135,14 @@ export default function ETable(props: IETableProps) {
                                 setNewCategoryTitle(e.target.value)
                             }
                         />
+                    </td>
+                    <td>
+                        <div
+                            className="box-box-container box-box-container__add_symbol"
+                            onClick={handleNewCategorySubmit}
+                        >
+                            +
+                        </div>
                     </td>
                 </tr>
             </tbody>

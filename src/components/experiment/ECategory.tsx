@@ -91,10 +91,7 @@ export default function ECategory(props: IECategoryProps) {
                 );
             })}
             <tr className="new-habit">
-                <td>
-                    <button className="c-btn" onClick={handleNewHabitSubmit}>
-                        +
-                    </button>
+                <td className="c-table-subtitle">
                     <input
                         className="new-habit-input input "
                         type="text"
@@ -102,6 +99,15 @@ export default function ECategory(props: IECategoryProps) {
                         value={newHabitTitle}
                         onChange={(e) => setNewHabitTitle(e.target.value)}
                     />
+                    &nbsp;
+                </td>
+                <td>
+                    <div
+                        className="box-box-container box-box-container__add_symbol"
+                        onClick={handleNewHabitSubmit}
+                    >
+                        +
+                    </div>
                 </td>
             </tr>
         </>
