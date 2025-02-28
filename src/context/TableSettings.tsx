@@ -1,16 +1,18 @@
 import {
     createContext,
     PropsWithChildren,
+    useCallback,
     useContext,
     useMemo,
     useState,
 } from "react";
-import { getTodayMidday } from "../components/experiment/EHabits";
+import { DAY_SECONDS, getTodayMidday } from "../components/experiment/EHabits";
 
 // TODO add the dates: number[] to the context
 interface ITableSettings {
     // Read only context
     today: number;
+    days: number[];
 
     //Modifiable settings
     lockPast: boolean;
@@ -24,6 +26,7 @@ interface ITableSettings {
 // Create the context
 export const TableSettingsContext = createContext<ITableSettings>({
     today: getTodayMidday(),
+    days: [getTodayMidday()],
     lockPast: false,
     lockFuture: true,
     setLockPast: () => {},
@@ -60,9 +63,22 @@ export function TableSettingsProvider(
 
     const today = getTodayMidday();
 
+    const getDates = useCallback(() => {
+        const today = getTodayMidday();
+        const start = today - 21 * DAY_SECONDS;
+        const end = today + 7 * DAY_SECONDS;
+
+        const middays: number[] = [];
+        for (let t = start; t <= end; t += DAY_SECONDS) {
+            middays.push(t);
+        }
+        return middays;
+    }, []);
+
     const settings = useMemo(() => {
         return {
             today,
+            days: getDates(),
             lockPast,
             lockFuture,
             setLockPast,
