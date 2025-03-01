@@ -1,0 +1,24 @@
+@use "../_vars/colours" as *;
+@use "../_vars/variables" as *;
+
+.c-signin-container {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.c-signin-box {
+    background-color: $pre-primary-colour;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 3px 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.c-signin-form-group {
+    margin-bottom: 20px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}

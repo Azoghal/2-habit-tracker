@@ -16,8 +16,8 @@ function Signup(): JSX.Element {
                 console.log("logged in as", user);
                 navigate("/landing");
             })
-            .catch((error: Error) => {
-                setErrorMsg(error.message);
+            .catch(() => {
+                setErrorMsg("Oops! That didn't look right. Try again");
             });
     }, [email, password, setErrorMsg, navigate]);
 
@@ -30,26 +30,42 @@ function Signup(): JSX.Element {
     }, [email, login, password, setErrorMsg]);
 
     return (
-        <>
-            <h1> Habit Tracker </h1>
-            <p> Sign in </p>
-            {errorMsg && <p>{errorMsg}</p>}
-            <input
-                type="text"
-                onChange={(e) => {
-                    setEmail(e.target.value);
-                }}
-                placeholder="Email"
-            />
-            <input
-                type="password"
-                onChange={(e) => {
-                    setPassword(e.target.value);
-                }}
-                placeholder="Password"
-            />
-            <button onClick={submit}>Submit</button>
-        </>
+        <div className="c-signin-container">
+            <div className="c-signin-box">
+                <h1> Habit Tracker </h1>
+                <h3> Sign in </h3>
+                {errorMsg && <p>{errorMsg}</p>}
+                <div className="c-signin-form-group">
+                    <label htmlFor="email">Email</label>
+                    <input
+                        className="input"
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                        }}
+                    />
+                </div>
+                <div className="c-signin-form-group">
+                    <label htmlFor="password">Password</label>
+                    <input
+                        className="input"
+                        type="password"
+                        id="password"
+                        name="password"
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                        }}
+                        required
+                    />
+                </div>
+                <button className="c-btn" onClick={submit}>
+                    Submit
+                </button>
+            </div>
+        </div>
     );
 }
 
