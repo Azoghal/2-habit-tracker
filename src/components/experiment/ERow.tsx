@@ -5,7 +5,7 @@ import { IEActivity, newExperiments } from "../../clients/experimentHabits";
 import { getTodayMidday } from "./EHabits";
 import { getDayOfWeek } from "./helpers";
 import { useTableSettings } from "../../context/TableSettings";
-import BinButton from "../BinButton";
+import { BinButton } from "../Buttons";
 
 export interface IEHabitProps {
     title: string;

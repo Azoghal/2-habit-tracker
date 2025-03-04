@@ -1,5 +1,5 @@
 import ETable from "./ETable";
-import LockButton from "../LockButton";
+import { LockButton } from "../Buttons";
 import { useTableSettings } from "../../context/TableSettings";
 
 export function getTodayMidday() {
@@ -20,25 +20,10 @@ export const YEAR_MILLIS = 365 * DAY_SECONDS * 1000;
 // EHabits makes a table. I don;t think its necessary.
 // it just needs to get all the category names, create categories.
 export default function EHabits(props: IEHabitsProps) {
-    const { days, lockPast, lockFuture, setLockPast, setLockFuture } =
-        useTableSettings();
+    const { days } = useTableSettings();
 
     return (
         <>
-            <LockButton
-                onToggle={() => {
-                    setLockPast(!lockPast);
-                }}
-                locked={lockPast}
-                buttonText=" Past"
-            />
-            <LockButton
-                onToggle={() => {
-                    setLockFuture(!lockFuture);
-                }}
-                locked={lockFuture}
-                buttonText=" Future"
-            />
             <ETable title={props.title} path={props.path} dates={days} />
         </>
     );

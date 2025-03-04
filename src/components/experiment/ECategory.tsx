@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import ERow from "./ERow";
 import { IEHabit, newExperiments } from "../../clients/experimentHabits";
-import BinButton from "../BinButton";
+import { BinButton } from "../Buttons";
 
 export interface IECategoryProps {
     title: string;
     path: string;
-    // habits: IHabit[];
     dates: number[];
     allowDelete: boolean;
     onDelete(): void;
+    allowAdd: boolean;
 }
 
 export default function ECategory(props: IECategoryProps) {
@@ -53,16 +53,19 @@ export default function ECategory(props: IECategoryProps) {
         setNewHabitTitle(""); // Clear the input field
     };
 
-    const handleHabitDelete = useCallback((path: string) => {
-        newExperiments()
-            .deleteHabit(path)
-            .catch((e) => {
-                console.log("failed to delete habit", e);
-            })
-            .finally(() => {
-                loadData();
-            });
-    }, []);
+    const handleHabitDelete = useCallback(
+        (path: string) => {
+            newExperiments()
+                .deleteHabit(path)
+                .catch((e) => {
+                    console.log("failed to delete habit", e);
+                })
+                .finally(() => {
+                    loadData();
+                });
+        },
+        [loadData],
+    );
 
     useEffect(() => {
         loadData();
@@ -90,26 +93,28 @@ export default function ECategory(props: IECategoryProps) {
                     />
                 );
             })}
-            <tr className="new-habit">
-                <td className="c-table-subtitle">
-                    <input
-                        className="new-habit-input input "
-                        type="text"
-                        placeholder="New Habit"
-                        value={newHabitTitle}
-                        onChange={(e) => setNewHabitTitle(e.target.value)}
-                    />
-                    &nbsp;
-                </td>
-                <td>
-                    <div
-                        className="box-box-container box-box-container__add_symbol"
-                        onClick={handleNewHabitSubmit}
-                    >
-                        +
-                    </div>
-                </td>
-            </tr>
+            {props.allowAdd && (
+                <tr className="new-habit">
+                    <td className="c-table-subtitle">
+                        <input
+                            className="new-habit-input input "
+                            type="text"
+                            placeholder="New Habit"
+                            value={newHabitTitle}
+                            onChange={(e) => setNewHabitTitle(e.target.value)}
+                        />
+                        &nbsp;
+                    </td>
+                    <td>
+                        <div
+                            className="box-box-container box-box-container__add_symbol"
+                            onClick={handleNewHabitSubmit}
+                        >
+                            +
+                        </div>
+                    </td>
+                </tr>
+            )}
         </>
     );
 }

@@ -4,7 +4,7 @@ import ECategory from "./ECategory";
 import { IECategory, newExperiments } from "../../clients/experimentHabits";
 import { DaysOfWeekShort, getDayOfWeek } from "./helpers";
 import { useTableSettings } from "../../context/TableSettings";
-import LockButton from "../LockButton";
+import { LockButton, AddButton } from "../Buttons";
 
 export interface IETableProps {
     title: string;
@@ -15,7 +15,17 @@ export interface IETableProps {
 export default function ETable(props: IETableProps) {
     const [newCategoryTitle, setNewCategoryTitle] = useState<string>("");
     const [categories, setCategories] = useState<IECategory[]>([]);
-    const { today, lockHeaders, setLockHeaders } = useTableSettings();
+    const {
+        today,
+        deleteHeaderMode,
+        setDeleteHeaderMode,
+        addHeaderMode,
+        setAddHeaderMode,
+        lockPast,
+        lockFuture,
+        setLockPast,
+        setLockFuture,
+    } = useTableSettings();
 
     const calculateHeaders = useMemo(() => {
         const headers: JSX.Element[] = [];
@@ -72,16 +82,23 @@ export default function ETable(props: IETableProps) {
         setNewCategoryTitle(""); // Clear the input field
     };
 
-    const handleDeleteCategory = useCallback((path: string) => {
-        newExperiments()
-            .deleteCategory(path)
-            .catch((e) => {
-                console.log("failed to delete category", e);
-            })
-            .finally(() => {
-                loadData();
-            });
-    }, []);
+    const handleDeleteCategory = useCallback(
+        (path: string) => {
+            if (!deleteHeaderMode) {
+                console.log("not in delete mode");
+                return;
+            }
+            newExperiments()
+                .deleteCategory(path)
+                .catch((e) => {
+                    console.log("failed to delete category", e);
+                })
+                .finally(() => {
+                    loadData();
+                });
+        },
+        [deleteHeaderMode, loadData],
+    );
 
     useEffect(() => {
         loadData();
@@ -96,11 +113,36 @@ export default function ETable(props: IETableProps) {
                 <tr>
                     <th className="c-table-subtitle">
                         <LockButton
-                            locked={lockHeaders}
-                            onToggle={() => setLockHeaders(!lockHeaders)}
+                            locked={!deleteHeaderMode}
+                            onToggle={() =>
+                                setDeleteHeaderMode(!deleteHeaderMode)
+                            }
+                        />
+                        <AddButton
+                            // locked={!deleteHeaderMode}
+                            onClick={() => {
+                                setAddHeaderMode(!addHeaderMode);
+                            }}
+                        />
+                        <LockButton
+                            onToggle={() => {
+                                setLockPast(!lockPast);
+                            }}
+                            locked={lockPast}
+                            buttonText=" Past"
+                        />
+                        <LockButton
+                            onToggle={() => {
+                                setLockFuture(!lockFuture);
+                            }}
+                            locked={lockFuture}
+                            buttonText=" Future"
                         />
                         &nbsp;
                     </th>
+                </tr>
+                <tr>
+                    <th className="c-table-subtitle">&nbsp;</th>
                     {calculateHeaders}
                 </tr>
             </thead>
@@ -112,39 +154,42 @@ export default function ETable(props: IETableProps) {
                             path={props.path + category.path}
                             key={category.name}
                             dates={props.dates}
-                            allowDelete={!lockHeaders}
+                            allowDelete={deleteHeaderMode}
                             onDelete={() => {
                                 handleDeleteCategory(
                                     props.path + category.path,
                                 );
                             }}
+                            allowAdd={addHeaderMode}
                         />
                     );
                 })}
                 <tr>
                     <td className="c-table-subtitle">&nbsp;</td>
                 </tr>
-                <tr>
-                    <td>
-                        <input
-                            className="input new-category-input"
-                            type="text"
-                            placeholder="New Category"
-                            value={newCategoryTitle}
-                            onChange={(e) =>
-                                setNewCategoryTitle(e.target.value)
-                            }
-                        />
-                    </td>
-                    <td>
-                        <div
-                            className="box-box-container box-box-container__add_symbol"
-                            onClick={handleNewCategorySubmit}
-                        >
-                            +
-                        </div>
-                    </td>
-                </tr>
+                {addHeaderMode && (
+                    <tr>
+                        <td>
+                            <input
+                                className="input new-category-input"
+                                type="text"
+                                placeholder="New Category"
+                                value={newCategoryTitle}
+                                onChange={(e) =>
+                                    setNewCategoryTitle(e.target.value)
+                                }
+                            />
+                        </td>
+                        <td>
+                            <div
+                                className="box-box-container box-box-container__add_symbol"
+                                onClick={handleNewCategorySubmit}
+                            >
+                                +
+                            </div>
+                        </td>
+                    </tr>
+                )}
             </tbody>
         </table>
     );

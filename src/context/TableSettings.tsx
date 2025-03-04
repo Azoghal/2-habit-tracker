@@ -19,8 +19,10 @@ interface ITableSettings {
     lockFuture: boolean;
     setLockPast: (value: boolean) => void;
     setLockFuture: (value: boolean) => void;
-    lockHeaders: boolean;
-    setLockHeaders: (value: boolean) => void;
+    deleteHeaderMode: boolean;
+    setDeleteHeaderMode: (value: boolean) => void;
+    addHeaderMode: boolean;
+    setAddHeaderMode: (value: boolean) => void;
 }
 
 // Create the context
@@ -31,8 +33,10 @@ export const TableSettingsContext = createContext<ITableSettings>({
     lockFuture: true,
     setLockPast: () => {},
     setLockFuture: () => {},
-    lockHeaders: true,
-    setLockHeaders: () => {},
+    deleteHeaderMode: false,
+    setDeleteHeaderMode: () => {},
+    addHeaderMode: false,
+    setAddHeaderMode: () => {},
 });
 
 // Custom hook to use the context
@@ -44,7 +48,8 @@ interface ITableSettingsProviderProps {
     initialSettings: {
         lockPast: boolean;
         lockFuture: boolean;
-        lockHeaders: boolean;
+        deleteHeaderMode: boolean;
+        addHeaderMode: boolean;
     }; // Optional initial settings
     children: React.ReactNode;
 }
@@ -57,8 +62,11 @@ export function TableSettingsProvider(
     const [lockFuture, setLockFuture] = useState(
         props.initialSettings.lockFuture,
     );
-    const [lockHeaders, setLockHeaders] = useState(
-        props.initialSettings.lockHeaders,
+    const [deleteHeaderMode, setDeleteHeaderMode] = useState(
+        props.initialSettings.deleteHeaderMode,
+    );
+    const [addHeaderMode, setAddHeaderMode] = useState(
+        props.initialSettings.addHeaderMode,
     );
 
     const today = getTodayMidday();
@@ -76,17 +84,29 @@ export function TableSettingsProvider(
     }, []);
 
     const settings = useMemo(() => {
-        return {
+        const settings: ITableSettings = {
             today,
             days: getDates(),
             lockPast,
             lockFuture,
             setLockPast,
             setLockFuture,
-            lockHeaders,
-            setLockHeaders,
+            deleteHeaderMode,
+            setDeleteHeaderMode,
+            addHeaderMode,
+            setAddHeaderMode,
         };
-    }, [lockFuture, lockHeaders, lockPast, today]);
+        return settings;
+    }, [
+        today,
+        getDates,
+        lockPast,
+        lockFuture,
+        deleteHeaderMode,
+        addHeaderMode,
+        setDeleteHeaderMode,
+        setAddHeaderMode,
+    ]);
 
     return (
         <TableSettingsContext.Provider value={settings}>
