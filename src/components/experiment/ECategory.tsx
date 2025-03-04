@@ -53,16 +53,19 @@ export default function ECategory(props: IECategoryProps) {
         setNewHabitTitle(""); // Clear the input field
     };
 
-    const handleHabitDelete = useCallback((path: string) => {
-        newExperiments()
-            .deleteHabit(path)
-            .catch((e) => {
-                console.log("failed to delete habit", e);
-            })
-            .finally(() => {
-                loadData();
-            });
-    }, []);
+    const handleHabitDelete = useCallback(
+        (path: string) => {
+            newExperiments()
+                .deleteHabit(path)
+                .catch((e) => {
+                    console.log("failed to delete habit", e);
+                })
+                .finally(() => {
+                    loadData();
+                });
+        },
+        [loadData],
+    );
 
     useEffect(() => {
         loadData();

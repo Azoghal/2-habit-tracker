@@ -15,7 +15,7 @@ export interface IETableProps {
 export default function ETable(props: IETableProps) {
     const [newCategoryTitle, setNewCategoryTitle] = useState<string>("");
     const [categories, setCategories] = useState<IECategory[]>([]);
-    const { today, lockHeaders, setLockHeaders } = useTableSettings();
+    const { today, deleteHeaderMode, setDeleteHeaderMode } = useTableSettings();
 
     const calculateHeaders = useMemo(() => {
         const headers: JSX.Element[] = [];
@@ -72,16 +72,23 @@ export default function ETable(props: IETableProps) {
         setNewCategoryTitle(""); // Clear the input field
     };
 
-    const handleDeleteCategory = useCallback((path: string) => {
-        newExperiments()
-            .deleteCategory(path)
-            .catch((e) => {
-                console.log("failed to delete category", e);
-            })
-            .finally(() => {
-                loadData();
-            });
-    }, []);
+    const handleDeleteCategory = useCallback(
+        (path: string) => {
+            if (!deleteHeaderMode) {
+                console.log("not in delete mode");
+                return;
+            }
+            newExperiments()
+                .deleteCategory(path)
+                .catch((e) => {
+                    console.log("failed to delete category", e);
+                })
+                .finally(() => {
+                    loadData();
+                });
+        },
+        [deleteHeaderMode, loadData],
+    );
 
     useEffect(() => {
         loadData();
@@ -96,8 +103,10 @@ export default function ETable(props: IETableProps) {
                 <tr>
                     <th className="c-table-subtitle">
                         <LockButton
-                            locked={lockHeaders}
-                            onToggle={() => setLockHeaders(!lockHeaders)}
+                            locked={!deleteHeaderMode}
+                            onToggle={() =>
+                                setDeleteHeaderMode(!deleteHeaderMode)
+                            }
                         />
                         &nbsp;
                     </th>
@@ -112,7 +121,7 @@ export default function ETable(props: IETableProps) {
                             path={props.path + category.path}
                             key={category.name}
                             dates={props.dates}
-                            allowDelete={!lockHeaders}
+                            allowDelete={deleteHeaderMode}
                             onDelete={() => {
                                 handleDeleteCategory(
                                     props.path + category.path,
