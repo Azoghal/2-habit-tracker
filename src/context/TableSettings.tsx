@@ -21,7 +21,8 @@ interface ITableSettings {
     setLockFuture: (value: boolean) => void;
     deleteHeaderMode: boolean;
     setDeleteHeaderMode: (value: boolean) => void;
-    // addHeaderMode: boolean;
+    addHeaderMode: boolean;
+    setAddHeaderMode: (value: boolean) => void;
 }
 
 // Create the context
@@ -34,6 +35,8 @@ export const TableSettingsContext = createContext<ITableSettings>({
     setLockFuture: () => {},
     deleteHeaderMode: false,
     setDeleteHeaderMode: () => {},
+    addHeaderMode: false,
+    setAddHeaderMode: () => {},
 });
 
 // Custom hook to use the context
@@ -46,6 +49,7 @@ interface ITableSettingsProviderProps {
         lockPast: boolean;
         lockFuture: boolean;
         deleteHeaderMode: boolean;
+        addHeaderMode: boolean;
     }; // Optional initial settings
     children: React.ReactNode;
 }
@@ -60,6 +64,9 @@ export function TableSettingsProvider(
     );
     const [deleteHeaderMode, setDeleteHeaderMode] = useState(
         props.initialSettings.deleteHeaderMode,
+    );
+    const [addHeaderMode, setAddHeaderMode] = useState(
+        props.initialSettings.addHeaderMode,
     );
 
     const today = getTodayMidday();
@@ -77,7 +84,7 @@ export function TableSettingsProvider(
     }, []);
 
     const settings = useMemo(() => {
-        return {
+        const settings: ITableSettings = {
             today,
             days: getDates(),
             lockPast,
@@ -86,8 +93,20 @@ export function TableSettingsProvider(
             setLockFuture,
             deleteHeaderMode,
             setDeleteHeaderMode,
+            addHeaderMode,
+            setAddHeaderMode,
         };
-    }, [today, getDates, lockPast, lockFuture, deleteHeaderMode]);
+        return settings;
+    }, [
+        today,
+        getDates,
+        lockPast,
+        lockFuture,
+        deleteHeaderMode,
+        addHeaderMode,
+        setDeleteHeaderMode,
+        setAddHeaderMode,
+    ]);
 
     return (
         <TableSettingsContext.Provider value={settings}>

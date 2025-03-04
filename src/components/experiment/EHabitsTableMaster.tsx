@@ -58,6 +58,7 @@ export default function EHabitsTableMaster(props: IHabitsTableMasterProps) {
                         lockFuture: true,
                         lockPast: false,
                         deleteHeaderMode: false,
+                        addHeaderMode: false,
                     }}
                 >
                     <EHabits
