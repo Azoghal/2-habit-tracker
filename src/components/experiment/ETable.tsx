@@ -4,7 +4,7 @@ import ECategory from "./ECategory";
 import { IECategory, newExperiments } from "../../clients/experimentHabits";
 import { DaysOfWeekShort, getDayOfWeek } from "./helpers";
 import { useTableSettings } from "../../context/TableSettings";
-import { LockButton, AddButton } from "../Buttons";
+import { LockButton, AddButton, BinButton } from "../Buttons";
 
 export interface IETableProps {
     title: string;
@@ -14,7 +14,7 @@ export interface IETableProps {
 
 export default function ETable(props: IETableProps) {
     const [newCategoryTitle, setNewCategoryTitle] = useState<string>("");
-    const [categories, setCategories] = useState<IECategory[]>([]);
+    const [categories, setCategories] = useState<IECategory[]>();
     const {
         today,
         deleteHeaderMode,
@@ -65,7 +65,10 @@ export default function ETable(props: IETableProps) {
             newExperiments()
                 .addCategory(props.path, categoryName)
                 .then((newCategory: IECategory) => {
-                    setCategories((oldCategories: IECategory[]) => {
+                    setCategories((oldCategories?: IECategory[]) => {
+                        if (oldCategories == undefined) {
+                            return [newCategory];
+                        }
                         return oldCategories.concat(newCategory);
                     });
                     loadData();
@@ -100,6 +103,12 @@ export default function ETable(props: IETableProps) {
         [deleteHeaderMode, loadData],
     );
 
+    const shouldShowAddCategory = useMemo(() => {
+        return (
+            addHeaderMode || (categories != undefined && categories.length == 0)
+        );
+    }, [addHeaderMode, categories]);
+
     useEffect(() => {
         loadData();
     }, [loadData]);
@@ -112,9 +121,8 @@ export default function ETable(props: IETableProps) {
                 </tr>
                 <tr>
                     <th className="c-table-subtitle">
-                        <LockButton
-                            locked={!deleteHeaderMode}
-                            onToggle={() =>
+                        <BinButton
+                            onClick={() =>
                                 setDeleteHeaderMode(!deleteHeaderMode)
                             }
                         />
@@ -147,27 +155,28 @@ export default function ETable(props: IETableProps) {
                 </tr>
             </thead>
             <tbody>
-                {categories.map((category) => {
-                    return (
-                        <ECategory
-                            title={category.name}
-                            path={props.path + category.path}
-                            key={category.name}
-                            dates={props.dates}
-                            allowDelete={deleteHeaderMode}
-                            onDelete={() => {
-                                handleDeleteCategory(
-                                    props.path + category.path,
-                                );
-                            }}
-                            allowAdd={addHeaderMode}
-                        />
-                    );
-                })}
+                {categories &&
+                    categories.map((category) => {
+                        return (
+                            <ECategory
+                                title={category.name}
+                                path={props.path + category.path}
+                                key={category.name}
+                                dates={props.dates}
+                                allowDelete={deleteHeaderMode}
+                                onDelete={() => {
+                                    handleDeleteCategory(
+                                        props.path + category.path,
+                                    );
+                                }}
+                                allowAdd={addHeaderMode}
+                            />
+                        );
+                    })}
                 <tr>
                     <td className="c-table-subtitle">&nbsp;</td>
                 </tr>
-                {addHeaderMode && (
+                {shouldShowAddCategory && (
                     <tr>
                         <td>
                             <input

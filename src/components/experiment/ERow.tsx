@@ -51,11 +51,7 @@ export default function ERow(props: IEHabitProps) {
     );
 
     if (activities == undefined) {
-        return (
-            <tr>
-                <td>...</td>
-            </tr>
-        );
+        return <></>;
     }
 
     return (
@@ -66,7 +62,7 @@ export default function ERow(props: IEHabitProps) {
             updateCheckbox={updateCheckbox}
             allowDelete={props.allowDelete}
             onDelete={props.onDelete}
-        ></EDateFilledRow>
+        />
     );
 }
 

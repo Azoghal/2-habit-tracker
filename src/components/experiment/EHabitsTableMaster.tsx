@@ -7,26 +7,31 @@ import { P_EXPERIMENTS_USERS } from "../../clients/schema";
 import { TableSettingsProvider } from "../../context/TableSettings";
 
 export interface IHabitsTableMasterProps {
-    // habitsDoc: IHabits,
-    // userDoc: IUser,
     user: User;
 }
 
 export default function EHabitsTableMaster(props: IHabitsTableMasterProps) {
+    const [newUserName, setNewUserName] = useState("");
     const [userDoc, setUserDoc] = useState<IUser>();
     const [needToStart, setNeedToStart] = useState<boolean>(false);
 
-    const getStarted = useCallback((user_id: string) => {
-        console.log("unimplimented, must create experiments user", user_id);
-        // newUsersClient()
-        //     .createHabitsUser(user_id)
-        //     .then((res: CreateHabitsUserResult) => {
-        //         setUserDoc(res.user);
-        //         setNeedToStart(false);
-        //     });
-    }, []);
+    const getStarted = useCallback(
+        (user_id: string) => {
+            if (newUserName.length > 0 && newUserName.length < 60) {
+                newUsersClient()
+                    .createUser({ display_name: newUserName, user_id: user_id })
+                    .then((res: IUser) => {
+                        setUserDoc(res);
+                        setNeedToStart(false);
+                    });
+            }
+        },
+        [newUserName],
+    );
 
-    const loadUser = useCallback(() => {
+    // Todo we can solve lots of this by waiting for user to be not undefined efore rendering a child component
+    // on first render
+    useEffect(() => {
         newUsersClient()
             .getUser(props.user.uid)
             .then((user: IUser) => {
@@ -39,16 +44,6 @@ export default function EHabitsTableMaster(props: IHabitsTableMasterProps) {
                 setNeedToStart(true);
             });
     }, [props.user.uid]);
-
-    const loadData = useCallback(() => {
-        loadUser();
-    }, [loadUser]);
-
-    // Todo we can solve lots of this by waiting for user to be not undefined efore rendering a child component
-    // on first render
-    useEffect(() => {
-        loadData();
-    }, [loadData]);
 
     return (
         <>
@@ -67,7 +62,23 @@ export default function EHabitsTableMaster(props: IHabitsTableMasterProps) {
                     />
                 </TableSettingsProvider>
             ) : needToStart ? (
-                <EGetStarted onClick={() => getStarted(props.user.uid)} />
+                // TODO add a username entry
+                <div className="c-signin-container">
+                    <div className="c-signin-box">
+                        <input
+                            className="c-input"
+                            placeholder="username"
+                            onChange={(e) => {
+                                setNewUserName(e.target.value);
+                            }}
+                        />
+                        <EGetStarted
+                            onClick={() => {
+                                getStarted(props.user.uid);
+                            }}
+                        />
+                    </div>
+                </div>
             ) : (
                 <>loading...</>
             )}
