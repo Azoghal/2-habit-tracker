@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ERow from "./ERow";
 import { IEHabit, newExperiments } from "../../clients/experimentHabits";
 import { BinButton } from "../Buttons";
@@ -16,7 +16,7 @@ export default function ECategory(props: IECategoryProps) {
     const [newHabitTitle, setNewHabitTitle] = useState<string>("");
     // const today = getTodayMidday();
 
-    const [habits, setHabits] = useState<IEHabit[]>([]);
+    const [habits, setHabits] = useState<IEHabit[]>();
 
     const loadData = useCallback(() => {
         const experimentClient = newExperiments();
@@ -36,7 +36,10 @@ export default function ECategory(props: IECategoryProps) {
                 .addCategoryHabit(props.path, newHabitName)
                 .then((newHabit: IEHabit) => {
                     // set the habits with the one we got back, then reload for sanity
-                    setHabits((oldHabits: IEHabit[]) => {
+                    setHabits((oldHabits?: IEHabit[]) => {
+                        if (oldHabits == undefined) {
+                            return [newHabit];
+                        }
                         return oldHabits.concat(newHabit);
                     });
                     loadData();
@@ -67,6 +70,14 @@ export default function ECategory(props: IECategoryProps) {
         [loadData],
     );
 
+    const shouldShowDeleteCategory = useMemo(() => {
+        return props.allowDelete && habits != undefined && habits.length == 0;
+    }, [props.allowDelete, habits]);
+
+    const shouldShowAddHabit = useMemo(() => {
+        return props.allowAdd || (habits != undefined && habits.length == 0);
+    }, [habits, props.allowAdd]);
+
     useEffect(() => {
         loadData();
     }, [loadData]);
@@ -75,25 +86,26 @@ export default function ECategory(props: IECategoryProps) {
         <>
             <tr>
                 <td className="category-title">
-                    {props.allowDelete && habits.length == 0 && (
+                    {shouldShowDeleteCategory && (
                         <BinButton onClick={props.onDelete} />
                     )}
                     {props.title}
                 </td>
             </tr>
-            {habits.map((habit) => {
-                return (
-                    <ERow
-                        title={habit.name}
-                        path={habit.path}
-                        key={habit.name}
-                        dates={props.dates}
-                        allowDelete={props.allowDelete}
-                        onDelete={() => handleHabitDelete(habit.path)}
-                    />
-                );
-            })}
-            {props.allowAdd && (
+            {habits &&
+                habits.map((habit) => {
+                    return (
+                        <ERow
+                            title={habit.name}
+                            path={habit.path}
+                            key={habit.name}
+                            dates={props.dates}
+                            allowDelete={props.allowDelete}
+                            onDelete={() => handleHabitDelete(habit.path)}
+                        />
+                    );
+                })}
+            {shouldShowAddHabit && (
                 <tr className="new-habit">
                     <td className="c-table-subtitle">
                         <input
