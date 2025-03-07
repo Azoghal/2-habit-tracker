@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "@firebase/auth";
 import { auth } from "../firebase";
 
-function Signup(): JSX.Element {
+function Signin(): JSX.Element {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -33,8 +33,12 @@ function Signup(): JSX.Element {
         <div className="c-signin-container">
             <div className="c-signin-box">
                 <h1> Habit Tracker </h1>
-                <h3> Sign in </h3>
+
+                <h3>
+                    Sign in (<a href="/signup">or Sign up</a>){" "}
+                </h3>
                 {errorMsg && <p>{errorMsg}</p>}
+
                 <div className="c-signin-form-group">
                     <label htmlFor="email">Email</label>
                     <input
@@ -69,4 +73,4 @@ function Signup(): JSX.Element {
     );
 }
 
-export default Signup;
+export default Signin;
