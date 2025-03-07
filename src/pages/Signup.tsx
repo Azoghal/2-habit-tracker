@@ -62,7 +62,7 @@ function Signup(): JSX.Element {
                 <h3> Sign up </h3>
                 {errorMsg && <p>{errorMsg}</p>}
                 {emailSent && (
-                    <p>
+                    <p className="c-signin-form-group">
                         We've sent you a verification email. Please follow the
                         instructions there to finalize your account creation.
                     </p>
@@ -78,6 +78,7 @@ function Signup(): JSX.Element {
                         onChange={(e) => {
                             setEmail(e.target.value);
                         }}
+                        readOnly={emailSent}
                     />
                 </div>
                 <div className="c-signin-form-group">
@@ -91,6 +92,7 @@ function Signup(): JSX.Element {
                             setPassword(e.target.value);
                         }}
                         required
+                        disabled={emailSent}
                     />
                 </div>
                 <div className="c-signin-form-group">
@@ -104,9 +106,10 @@ function Signup(): JSX.Element {
                             setRepeatPassword(e.target.value);
                         }}
                         required
+                        disabled={emailSent}
                     />
                 </div>
-                <button className="c-btn" onClick={submit}>
+                <button className="c-btn" onClick={submit} disabled={emailSent}>
                     Create Account
                 </button>
             </div>
